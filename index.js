@@ -2,6 +2,8 @@ const express = require("express")
 const cors = require("cors")
 const { connect } = require("./mongoDBConfig/mongoClient")
 const productsRouter = require("./routes/productsRouter")
+const cartRouter = require("./routes/cartRouter")
+const reviewsRouter = require("./routes/reviewsRouter")
 
 const port = process.env.PORT || 5000
 const app = express()
@@ -14,6 +16,15 @@ connect()
     .then(() => {
         // products routes
         app.use("/products", productsRouter)
+
+        // cart routes
+        app.use("/cart", cartRouter)
+
+        // reviews routes
+        app.use("/reviews", reviewsRouter)
+
+        // advertised products routes
+        app.use("/advertisedProducts", advertisedProductsRouter)
     })
     .catch(err => console.log(err))
 
