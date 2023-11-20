@@ -5,7 +5,7 @@ const productsRouter = require("./routes/productsRouter")
 const cartRouter = require("./routes/cartRouter")
 const reviewsRouter = require("./routes/reviewsRouter")
 const advertisedProductsRouter = require("./routes/advertisedProductsRouter")
-const uploadRouter = require("./routes/uploadRouter")
+const showFilesRouter = require("./routes/showFilesRouter")
 
 const port = process.env.PORT || 5000
 const app = express()
@@ -28,8 +28,8 @@ connect()
         // advertised products routes
         app.use("/advertisedProducts", advertisedProductsRouter)
 
-        // upload routes
-        app.use("/upload", uploadRouter)
+        // show files routes
+        app.use("/files", showFilesRouter)
     })
     .catch(err => console.log(err))
 
