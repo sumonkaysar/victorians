@@ -1,9 +1,7 @@
 const fs = require("fs");
-const { readDoc, createDoc, updateDoc, deleteDoc, readOneDoc } = require("../utils/mongoQueries");
 const { productsCollection } = require("../mongoDBConfig/collections");
 
-const uploadFile = async (req, res, next) => {
-    // console.log(req.file);
+const uploadFile = async (req, res) => {
     const product = req.body
     product.image = `http://localhost:5000/upload/files/${req.file.filename}`
     
