@@ -1,6 +1,8 @@
+const { ObjectId } = require("mongodb")
 const { productsCollection } = require("../mongoDBConfig/collections")
 const { readDoc, createDoc, updateDoc, deleteDoc, readOneDoc } = require("../utils/mongoQueries")
 const { uploadFile } = require("../utils/uploadFile")
+const { deleteFiles } = require("../utils/fileReadAndDelete")
 
 const getAllProducts = async (req, res) => {
     const products = await readDoc(productsCollection)
@@ -19,6 +21,8 @@ const updateProduct = async (req, res) => {
 }
 
 const deleteProduct = async (req, res) => {
+    const product = await productsCollection().findOne({_id: new ObjectId(req.params.id)})
+    deleteFiles(product.image.split("files/")[1])
     const result = await deleteDoc(req, productsCollection)
     res.send(result)
 }

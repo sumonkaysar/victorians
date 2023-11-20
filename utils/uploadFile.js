@@ -15,6 +15,12 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage })
 
 const uploadFile = filename => {
+    const fileUrl = `http://localhost:5000/files/${filename}`
+    
+    return fileUrl;
+}
+
+const deleteUploadedFile = filename => {
     const fileUrl = `http://localhost:5000/upload/files/${filename}`
     
     return fileUrl;
