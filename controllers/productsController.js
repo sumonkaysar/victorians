@@ -21,7 +21,7 @@ const updateProduct = async (req, res) => {
 }
 
 const deleteProduct = async (req, res) => {
-    const product = await productsCollection().findOne({_id: new ObjectId(req.params.id)})
+    const product = await productsCollection().findOne({ _id: new ObjectId(req.params.id) })
     deleteFiles(product.image.split("files/")[1])
     const result = await deleteDoc(req, productsCollection)
     res.send(result)
