@@ -12,17 +12,11 @@ const storage = multer.diskStorage({
         cb(null, filename)
     }
 })
+
 const upload = multer({ storage: storage })
 
-const uploadFile = filename => {
+const uploadFile = (filename = 'avatar.png') => {
     const fileUrl = `http://localhost:5000/files/${filename}`
-    
-    return fileUrl;
-}
-
-const deleteUploadedFile = filename => {
-    const fileUrl = `http://localhost:5000/upload/files/${filename}`
-    
     return fileUrl;
 }
 

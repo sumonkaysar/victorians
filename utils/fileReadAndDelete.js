@@ -7,7 +7,7 @@ const readFiles = (res, filename) => {
         function (err, image) {
             if (err) {
                 console.log(err);
-                return res.status(404).send({message: "file not Found"})
+                return res.status(404).send({ message: "file not Found" })
             }
             res.setHeader('Content-Type', 'image/jpg');
             res.send(image);

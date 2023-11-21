@@ -1,4 +1,4 @@
-const {showUploadedFiles } = require("../controllers/showFilesController")
+const { showUploadedFiles } = require("../controllers/showFilesController")
 
 const showFiles = require("express").Router()
 
