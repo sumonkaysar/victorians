@@ -1,4 +1,5 @@
 const bcrypt = require('bcrypt');
+const jwt = require("jsonwebtoken")
 const { usersCollection, passwordsCollection } = require("../mongoDBConfig/collections")
 const { createDoc } = require("../utils/mongoQueries")
 const { uploadFile } = require("../utils/uploadFile")
@@ -7,15 +8,42 @@ const signup = async (req, res) => {
     try {
         req.body.avatar = uploadFile(req.file?.filename)
         const { password, email } = req.body;
-        delete req.body.password
-        const hash = await bcrypt.hash(password, 10);
-        const result = await passwordsCollection().insertOne({ hash, email })
-        const result2 = await createDoc(req, usersCollection)
-        res.send(result2)
+        const dbPassword = await passwordsCollection().findOne({ email })
+        if (!dbPassword) {
+            delete req.body.password
+            const hash = await bcrypt.hash(password, 10);
+            const result = await passwordsCollection().insertOne({ hash, email })
+            if (result) {
+                const result2 = await createDoc(req, usersCollection)
+                if (result2) {
+                    const token = jwt.sign({ user: { email } }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '7d' })
+                    return res.cookie("victoriansToken", token, { httpOnly: true }).send({ creation: result2, token })
+                }
+                return res.status(500).send({ message: "Account could not be created" })
+            }
+            res.status(500).send({ message: "Account could not be created" })
+        } else {
+            res.status(403).send({ message: "This email is already registered" })
+        }
+
     } catch (err) {
-        console.log(err.message)
         res.status(500).send(err.message)
     }
+}
+
+const login = async (req, res) => {
+    const { email, password } = req.body
+    const dbPassword = await passwordsCollection().findOne({ email })
+    if (dbPassword) {
+        const match = await bcrypt.compare(password, dbPassword.hash);
+
+        if (match) {
+            const token = jwt.sign({ user: { email } }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '7d' })
+            return res.status(200).send({ status: 200, message: "Logged in successfull", token })
+        }
+        return res.status(403).send({ status: 403, message: "Password is incorrect" })
+    }
+    res.status(403).send({ status: 403, message: "This email is not registered" })
 }
 
 const changePassword = async (req, res) => {
@@ -33,24 +61,15 @@ const changePassword = async (req, res) => {
 }
 
 const forgotPassword = async (req, res) => {
+    console.log(req.headers.authorization);
     // const product = await productsCollection().findOne({ _id: new ObjectId(req.params.id) })
     // deleteFiles(product.image.split("files/")[1])
     // const result = await deleteDoc(req, productsCollection)
     res.send({})
 }
 
-const login = async (req, res) => {
-    const { email, password } = req.body
-    const dbPassword = await passwordsCollection().findOne({ email: email })
-    if (dbPassword) {
-        const match = await bcrypt.compare(password, dbPassword.hash);
-
-        if (match) {
-            return res.status(200).send({ status: 200, message: "Your account is created successfully" })
-        }
-        return res.status(401).send({ status: 401, message: "Password is incorrect" })
-    }
-    res.status(401).send({ status: 401, message: "This email is not registered" })
+const isLoggedIn = async (req, res) => {
+    res.status(200).send({ status: 200, message: 'logged in' })
 }
 
 module.exports = {
@@ -58,4 +77,5 @@ module.exports = {
     login,
     changePassword,
     forgotPassword,
+    isLoggedIn,
 }
