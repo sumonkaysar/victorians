@@ -8,7 +8,7 @@ authRouter.post("/signup", upload.single('avatar'), signup)
 
 authRouter.post("/login", login)
 
-authRouter.post("/password/change", changePassword)
+authRouter.post("/password/change", verifyJWT, changePassword)
 
 authRouter.post("/password/forgot", verifyJWT, forgotPassword)
 
