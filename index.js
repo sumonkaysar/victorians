@@ -8,6 +8,8 @@ const advertisedProductsRouter = require("./routes/advertisedProductsRouter")
 const showFilesRouter = require("./routes/showFilesRouter")
 const membershipsRouter = require("./routes/membershipsRouter")
 const authRouter = require("./routes/authRoutes")
+const couponsRouter = require("./routes/couponsRouter")
+const purchasesRouter = require("./routes/productsRouter copy")
 
 const port = process.env.PORT || 5000
 const app = express()
@@ -38,6 +40,12 @@ connect()
 
         // authentication and authorization routes
         app.use("/auth", authRouter)
+
+        // purchases routes
+        app.use("/purchases", purchasesRouter)
+
+        // coupons routes
+        app.use("/coupons", couponsRouter)
     })
     .catch(err => console.log(err))
 
