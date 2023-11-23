@@ -16,7 +16,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage })
 
 const uploadFile = (filename = 'avatar.png') => {
-    const fileUrl = `http://localhost:5000/files/${filename}`
+    const fileUrl = `${process.env.SERVER}/files/${filename}`
     return fileUrl;
 }
 
