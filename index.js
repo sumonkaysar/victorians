@@ -7,7 +7,7 @@ const reviewsRouter = require("./routes/reviewsRouter")
 const advertisedProductsRouter = require("./routes/advertisedProductsRouter")
 const showFilesRouter = require("./routes/showFilesRouter")
 const membershipsRouter = require("./routes/membershipsRouter")
-const authRouter = require("./routes/authRoutes")
+const authRouter = require("./routes/authRouter")
 const couponsRouter = require("./routes/couponsRouter")
 const purchasesRouter = require("./routes/productsRouter copy")
 

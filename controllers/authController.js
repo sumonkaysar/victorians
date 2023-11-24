@@ -2,7 +2,8 @@ const bcrypt = require('bcrypt');
 const jwt = require("jsonwebtoken")
 const { usersCollection, passwordsCollection } = require("../mongoDBConfig/collections")
 const { createDoc } = require("../utils/mongoQueries")
-const { uploadFile } = require("../utils/uploadFile")
+const { uploadFile } = require("../utils/uploadFile");
+const { deleteFiles } = require('../utils/fileReadAndDelete');
 
 const signup = async (req, res) => {
     try {
@@ -23,6 +24,9 @@ const signup = async (req, res) => {
             }
             res.status(500).send({ message: "Account could not be created" })
         } else {
+            if (req.file?.filename) {
+                deleteFiles(req.file?.filename)
+            }
             res.status(403).send({ message: "This email is already registered" })
         }
     } catch (err) {
@@ -79,7 +83,8 @@ const forgotPassword = async (req, res) => {
 
 const isLoggedIn = async (req, res) => {
     const { email } = req.decoded.user
-    res.status(200).send({ status: 200, message: 'logged in', email })
+    const user = await usersCollection().findOne({ email })
+    res.status(200).send({ status: 200, message: 'logged in', user })
 }
 
 module.exports = {
