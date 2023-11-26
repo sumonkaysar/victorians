@@ -17,8 +17,7 @@ const signup = async (req, res) => {
             if (result) {
                 const result2 = await createDoc(req, usersCollection)
                 if (result2) {
-                    const token = jwt.sign({ user: { email } }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '7d' })
-                    return res.cookie("victoriansToken", token, { httpOnly: true }).send({ creation: result2, token })
+                    return res.send({ creation: result2 })
                 }
                 return res.status(500).send({ message: "Account could not be created" })
             }

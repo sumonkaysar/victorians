@@ -9,7 +9,7 @@ const showFilesRouter = require("./routes/showFilesRouter")
 const membershipsRouter = require("./routes/membershipsRouter")
 const authRouter = require("./routes/authRouter")
 const couponsRouter = require("./routes/couponsRouter")
-const purchasesRouter = require("./routes/productsRouter copy")
+const purchasesRouter = require("./routes/purchasesRouter")
 
 const port = process.env.PORT || 5000
 const app = express()

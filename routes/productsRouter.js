@@ -1,11 +1,13 @@
-const { getAllProducts, saveProduct, updateProduct, deleteProduct, getOneProduct } = require("../controllers/productsController")
+const { getAllProducts, saveProduct, updateProduct, deleteProduct, getOneProduct, getPopularProducts } = require("../controllers/productsController")
 const { upload } = require("../utils/uploadFile")
 
 const productsRouter = require("express").Router()
 
+productsRouter.get("/popular", getPopularProducts)
+
 productsRouter.get("/", getAllProducts)
 
-productsRouter.post("/", upload.single('image'), saveProduct)
+productsRouter.post("/", upload.single('img'), saveProduct)
 
 productsRouter.patch("/:id", updateProduct)
 
