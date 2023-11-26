@@ -12,6 +12,6 @@ authRouter.post("/password/change", changePassword)
 
 authRouter.post("/password/forgot", verifyJWT, forgotPassword)
 
-authRouter.post("/isLoggedIn", verifyJWT, isLoggedIn)
+authRouter.get("/isLoggedIn", verifyJWT, isLoggedIn)
 
 module.exports = authRouter

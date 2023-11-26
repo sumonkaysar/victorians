@@ -16,6 +16,6 @@ async function connect() {
     return client;
 }
 
-const getConectedClient = () => client;
+const getConnectedClient = () => client;
 
-module.exports = { connect, client: getConectedClient }
+module.exports = { connect, client: getConnectedClient }

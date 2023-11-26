@@ -69,7 +69,9 @@ const forgotPassword = async (req, res) => {
 }
 
 const isLoggedIn = async (req, res) => {
-    res.status(200).send({ status: 200, message: 'logged in' })
+    const { email } = req.decoded.user
+    const user = await usersCollection().findOne({ email })
+    res.status(200).send({ status: 200, message: 'logged in', user })
 }
 
 module.exports = {

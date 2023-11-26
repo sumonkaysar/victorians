@@ -9,6 +9,7 @@ const advertisedProductsCollection = () => client().db(DB).collection("advertise
 const membershipsCollection = () => client().db(DB).collection("memberships")
 const usersCollection = () => client().db(DB).collection("users")
 const passwordsCollection = () => client().db(DB).collection("passwords")
+const userMessage = ()=> client().db(DB).collection("message")
 
 module.exports = {
     productsCollection,
@@ -18,4 +19,5 @@ module.exports = {
     membershipsCollection,
     usersCollection,
     passwordsCollection,
+    userMessage
 }
