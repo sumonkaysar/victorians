@@ -2,7 +2,8 @@ const bcrypt = require('bcrypt');
 const jwt = require("jsonwebtoken")
 const { usersCollection, passwordsCollection } = require("../mongoDBConfig/collections")
 const { createDoc } = require("../utils/mongoQueries")
-const { uploadFile } = require("../utils/uploadFile")
+const { uploadFile } = require("../utils/uploadFile");
+const { deleteFiles } = require('../utils/fileReadAndDelete');
 
 const signup = async (req, res) => {
     try {
@@ -16,16 +17,17 @@ const signup = async (req, res) => {
             if (result) {
                 const result2 = await createDoc(req, usersCollection)
                 if (result2) {
-                    const token = jwt.sign({ user: { email } }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '7d' })
-                    return res.cookie("victoriansToken", token, { httpOnly: true }).send({ creation: result2, token })
+                    return res.send({ creation: result2 })
                 }
                 return res.status(500).send({ message: "Account could not be created" })
             }
             res.status(500).send({ message: "Account could not be created" })
         } else {
+            if (req.file?.filename) {
+                deleteFiles(req.file?.filename)
+            }
             res.status(403).send({ message: "This email is already registered" })
         }
-
     } catch (err) {
         res.status(500).send(err.message)
     }
@@ -39,7 +41,7 @@ const login = async (req, res) => {
 
         if (match) {
             const token = jwt.sign({ user: { email } }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '7d' })
-            return res.status(200).send({ status: 200, message: "Logged in successfull", token })
+            return res.status(200).send({ status: 200, message: "Logged in successfully", token })
         }
         return res.status(403).send({ status: 403, message: "Password is incorrect" })
     }
@@ -48,12 +50,22 @@ const login = async (req, res) => {
 
 const changePassword = async (req, res) => {
     try {
-        const { password, email } = req.body;
-        const hash = await bcrypt.hash(password, 10);
-        const result = await passwordsCollection().updateOne({ email }, {
-            $set: { password: hash }
-        })
-        res.send(result)
+        const { email } = req.decoded.user
+        const { oldPassword, newPassword } = req.body;
+        const dbPassword = await passwordsCollection().findOne({ email })
+        if (dbPassword) {
+            const match = await bcrypt.compare(oldPassword, dbPassword.hash);
+    
+            if (match) {
+                const hash = await bcrypt.hash(newPassword, 10);
+                const result = await passwordsCollection().updateOne({ email }, {
+                    $set: { hash }
+                })
+                return res.status(200).send({ status: 200, message: "Password is changed successfully", result })
+            }
+            return res.status(403).send({ status: 403, message: "Old password is incorrect" })
+        }
+        res.status(403).send({ status: 403, message: "This email is not registered" })
     } catch (err) {
         console.log(err.message)
         res.status(500).send(err.message)

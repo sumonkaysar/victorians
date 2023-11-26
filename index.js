@@ -1,13 +1,15 @@
-const express = require("express");
-const cors = require("cors");
-const { connect } = require("./mongoDBConfig/mongoClient");
-const productsRouter = require("./routes/productsRouter");
-const cartRouter = require("./routes/cartRouter");
-const reviewsRouter = require("./routes/reviewsRouter");
-const advertisedProductsRouter = require("./routes/advertisedProductsRouter");
-const showFilesRouter = require("./routes/showFilesRouter");
-const membershipsRouter = require("./routes/membershipsRouter");
-const authRouter = require("./routes/authRoutes");
+const express = require("express")
+const cors = require("cors")
+const { connect } = require("./mongoDBConfig/mongoClient")
+const productsRouter = require("./routes/productsRouter")
+const cartRouter = require("./routes/cartRouter")
+const reviewsRouter = require("./routes/reviewsRouter")
+const advertisedProductsRouter = require("./routes/advertisedProductsRouter")
+const showFilesRouter = require("./routes/showFilesRouter")
+const membershipsRouter = require("./routes/membershipsRouter")
+const authRouter = require("./routes/authRouter")
+const couponsRouter = require("./routes/couponsRouter")
+const purchasesRouter = require("./routes/purchasesRouter")
 const message = require("./routes/message_router");
 const { messageFileSetMulter } = require("./routes/message_multer_router");
 
@@ -40,6 +42,13 @@ connect()
 
     // authentication and authorization routes
     app.use("/auth", authRouter);
+
+    // purchases routes
+    app.use("/purchases", purchasesRouter)
+
+    // coupons routes
+    app.use("/coupons", couponsRouter)
+    
     //message
     // app.use("/message", message);
 

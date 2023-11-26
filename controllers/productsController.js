@@ -10,7 +10,7 @@ const getAllProducts = async (req, res) => {
 }
 
 const saveProduct = async (req, res) => {
-    req.body.image = uploadFile(req.file.filename)
+    req.body.img = uploadFile(req.file.filename)
     const result = await createDoc(req, productsCollection)
     res.send(result)
 }
@@ -32,6 +32,10 @@ const getOneProduct = async (req, res) => {
     res.send(result || {})
 }
 
+const getPopularProducts = async (req, res) => {
+    const popularProducts = await productsCollection().find({popular: true}).toArray()
+    res.send(popularProducts)
+}
 
 module.exports = {
     getAllProducts,
@@ -39,4 +43,5 @@ module.exports = {
     updateProduct,
     deleteProduct,
     getOneProduct,
+    getPopularProducts,
 }
