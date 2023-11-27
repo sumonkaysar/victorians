@@ -10,6 +10,7 @@ const membershipsRouter = require("./routes/membershipsRouter")
 const authRouter = require("./routes/authRouter")
 const couponsRouter = require("./routes/couponsRouter")
 const purchasesRouter = require("./routes/purchasesRouter")
+const usersRouter = require("./routes/usersRouter")
 
 const port = process.env.PORT || 5000
 const app = express()
@@ -46,6 +47,9 @@ connect()
 
         // coupons routes
         app.use("/coupons", couponsRouter)
+
+        // users routes
+        app.use("/users", usersRouter)
     })
     .catch(err => console.log(err))
 
