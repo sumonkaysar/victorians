@@ -1,11 +1,11 @@
-// const { getUserMessageData, postUserMessage, deleteMessage } = require("../controllers/message_controller");
+const { saveMessage, getMessage, getLatestUsers } = require("../controllers/message_controller");
+const { upload } = require("../utils/uploadFile");
 
 
-// const message = require("express").Router();
+const messageRouter = require("express").Router();
 
-// message.get("userMessage/:userId", getUserMessageData);
-// message.post("/", postUserMessage);
-// message.delete("/:id", deleteMessage);
+messageRouter.get("/users", getLatestUsers);
+messageRouter.post("/", upload.single('messageFiles'), saveMessage);
+messageRouter.get("/:id", getMessage);
 
-
-// module.exports = message;
+module.exports = messageRouter;

@@ -1,9 +1,10 @@
-const { getUsers } = require("../controllers/usersController")
+const { getUsers, getOneUser } = require("../controllers/usersController")
 // const { upload } = require("../utils/uploadFile")
 
 const usersRouter = require("express").Router()
 
 usersRouter.get("/", getUsers)
+usersRouter.get("/:id", getOneUser)
 
 // usersRouter.post("/", upload.single('avatar'), createUser)
 

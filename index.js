@@ -11,7 +11,8 @@ const authRouter = require("./routes/authRouter")
 const couponsRouter = require("./routes/couponsRouter")
 const purchasesRouter = require("./routes/purchasesRouter")
 const message = require("./routes/message_router");
-const { messageFileSetMulter } = require("./routes/message_multer_router");
+const messageRouter = require("./routes/message_router")
+const usersRouter = require("./routes/usersRouter")
 
 const port = process.env.PORT || 5000;
 const app = express();
@@ -50,10 +51,11 @@ connect()
     app.use("/coupons", couponsRouter)
     
     //message
-    // app.use("/message", message);
+    app.use("/message", messageRouter);
 
-    //message file set multer
-    // app.use("/messageFileSet", messageFileSetMulter);
+    //usersGet
+    app.use("/users", usersRouter);
+
   })
   .catch((err) => console.log(err));
 
