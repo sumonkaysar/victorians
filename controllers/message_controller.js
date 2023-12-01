@@ -5,7 +5,9 @@ const { uploadFile } = require("../utils/uploadFile");
 
 const saveMessage = async (req, res) => {
   req.body = JSON.parse(req.body.messageData);
-  req.body.message.videoOrImg = uploadFile(req.file.filename);
+  if (req.file?.filename) {
+    req.body.message.videoOrImg = uploadFile(req.file.filename);
+  }
   const result = await createDoc(req, userMessage);
   res.send(result);
 };

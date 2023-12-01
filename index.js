@@ -13,13 +13,31 @@ const purchasesRouter = require("./routes/purchasesRouter")
 const message = require("./routes/message_router");
 const messageRouter = require("./routes/message_router")
 const usersRouter = require("./routes/usersRouter")
+const chatRoutes = require("./routes/socketRouter")
+
 
 const port = process.env.PORT || 5000;
-const app = express();
 
 // middlewares
-app.use(cors());
-app.use(express.json());
+const app = express();
+app.use(cors())
+app.use(express.json())
+app.use(express.urlencoded({extended:false}))
+
+//socket.io require http server
+const http = require('http');
+const httpServer = http.createServer(app);
+const { Server } = require("socket.io")
+
+
+// With this line (allow all origins for testing, update in production)
+const io = new Server(httpServer, {
+  cors: {
+    origin: "*",
+  },
+});
+const chat = chatRoutes(io);;
+
 
 connect()
   .then(() => {
@@ -49,12 +67,15 @@ connect()
 
     // coupons routes
     app.use("/coupons", couponsRouter)
-    
+
     //message
     app.use("/message", messageRouter);
 
     //usersGet
     app.use("/users", usersRouter);
+
+    //socket.io
+    app.use('/chat', chat);
 
   })
   .catch((err) => console.log(err));
@@ -63,4 +84,4 @@ app.get("/", (_, res) => {
   res.send("Server is running");
 });
 
-app.listen(port, () => console.log("Server is running on port:", port));
+httpServer.listen(port, () => console.log("Server is running on port:", port));
