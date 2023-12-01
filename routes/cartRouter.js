@@ -1,11 +1,17 @@
-const { getCartProducts, saveCartProduct, deleteCartProduct } = require("../controllers/cartController")
+const { getCartProducts, saveCartProduct, deleteCartProduct, inCartAlready, getMyCartProducts, getCartPackage } = require("../controllers/cartController")
 
 const cartRouter = require("express").Router()
+
+cartRouter.get("/in-cart-already", inCartAlready)
+
+cartRouter.get("/myCart", getMyCartProducts)
+
+cartRouter.get("/package/:packageId", getCartPackage)
 
 cartRouter.get("/", getCartProducts)
 
 cartRouter.post("/", saveCartProduct)
 
-cartRouter.delete("/:id", deleteCartProduct)
+cartRouter.delete("/:userId/:productId", deleteCartProduct)
 
 module.exports = cartRouter

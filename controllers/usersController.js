@@ -32,7 +32,21 @@ const getOneUser = async (req, res) => {
 };
 
 
+const updateUser = async (req, res) => {
+    req.body = {role: "admin"}
+    const result = await updateDoc(req, usersCollection)
+    res.send(result)
+}
+
+const getUserRole = async (req, res) => {
+    const user = await usersCollection().findOne({email: req.query?.email})
+    const role = user.role || "user"
+    res.send({role})
+}
+
 module.exports = {
     getUsers,
+    updateUser,
+    getUserRole,
     getOneUser
 }

@@ -41,7 +41,8 @@ const login = async (req, res) => {
 
         if (match) {
             const token = jwt.sign({ user: { email } }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '7d' })
-            return res.status(200).send({ status: 200, message: "Logged in successfully", token })
+            const user = await usersCollection().findOne({ email })
+            return res.status(200).send({ status: 200, message: "Logged in successfully", token, user })
         }
         return res.status(403).send({ status: 403, message: "Password is incorrect" })
     }

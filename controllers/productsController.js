@@ -11,6 +11,7 @@ const getAllProducts = async (req, res) => {
 
 const saveProduct = async (req, res) => {
     req.body.img = uploadFile(req.file.filename)
+    req.body.packages = JSON.parse(req.body.packages)
     const result = await createDoc(req, productsCollection)
     res.send(result)
 }
