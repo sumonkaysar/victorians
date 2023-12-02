@@ -28,6 +28,7 @@ app.use(express.urlencoded({extended:false}))
 const http = require('http');
 const httpServer = http.createServer(app);
 const { Server } = require("socket.io")
+const adminRouter = require("./routes/adminRouter")
 
 
 // With this line (allow all origins for testing, update in production)
@@ -76,6 +77,9 @@ connect()
 
     //socket.io
     app.use('/chat', chat);
+
+    //admin routes
+    app.use('/admin', adminRouter);
 
   })
   .catch((err) => console.log(err));

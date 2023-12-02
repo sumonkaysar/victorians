@@ -10,7 +10,6 @@ const getUsers = async (req, res) => {
 }
 
 const updateUser = async (req, res) => {
-  req.body = { role: "admin" }
   const result = await updateDoc(req, usersCollection)
   res.send(result)
 }
@@ -18,7 +17,8 @@ const updateUser = async (req, res) => {
 const getUserRole = async (req, res) => {
   const user = await usersCollection().findOne({ email: req.query?.email })
   const role = user.role || "user"
-  res.send({ role })
+  const adminType = user.adminType || ""
+  res.send({ role, adminType })
 }
 
 const getOneUser = async (req, res) => {

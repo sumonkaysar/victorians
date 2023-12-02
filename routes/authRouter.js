@@ -1,5 +1,5 @@
 const { signup, login, forgotPassword, changePassword, isLoggedIn } = require("../controllers/authController")
-const { verifyJWT } = require("../middlewares/verifyJWT")
+const { verifyUser } = require("../middlewares/verifyJWT")
 const { upload } = require("../utils/uploadFile")
 
 const authRouter = require("express").Router()
@@ -8,10 +8,10 @@ authRouter.post("/signup", upload.single('avatar'), signup)
 
 authRouter.post("/login", login)
 
-authRouter.post("/password/change", verifyJWT, changePassword)
+authRouter.post("/password/change", verifyUser, changePassword)
 
-authRouter.post("/password/forgot", verifyJWT, forgotPassword)
+authRouter.post("/password/forgot", verifyUser, forgotPassword)
 
-authRouter.get("/isLoggedIn", verifyJWT, isLoggedIn)
+authRouter.get("/isLoggedIn", verifyUser, isLoggedIn)
 
 module.exports = authRouter
