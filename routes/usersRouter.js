@@ -1,4 +1,4 @@
-const { getUsers, getUserRole, updateUser } = require("../controllers/usersController")
+const { getUsers, getUserRole, updateUser, getOneUser } = require("../controllers/usersController")
 // const { upload } = require("../utils/uploadFile")
 
 const usersRouter = require("express").Router()
@@ -6,6 +6,8 @@ const usersRouter = require("express").Router()
 usersRouter.get("/role", getUserRole)
 
 usersRouter.get("/", getUsers)
+
+usersRouter.get("/:id", getOneUser)
 
 // usersRouter.post("/", upload.single('avatar'), createUser)
 
