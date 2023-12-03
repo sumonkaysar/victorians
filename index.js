@@ -22,13 +22,14 @@ const port = process.env.PORT || 5000;
 const app = express();
 app.use(cors())
 app.use(express.json())
-app.use(express.urlencoded({extended:false}))
+app.use(express.urlencoded({ extended: false }))
 
 //socket.io require http server
 const http = require('http');
 const httpServer = http.createServer(app);
 const { Server } = require("socket.io")
 const adminRouter = require("./routes/adminRouter")
+const paymentRouter = require("./routes/paymentRouter")
 
 
 // With this line (allow all origins for testing, update in production)
@@ -80,6 +81,9 @@ connect()
 
     //admin routes
     app.use('/admin', adminRouter);
+
+    //payment routes
+    app.use('/payment', paymentRouter);
 
   })
   .catch((err) => console.log(err));
