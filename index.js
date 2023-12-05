@@ -30,6 +30,7 @@ const httpServer = http.createServer(app);
 const { Server } = require("socket.io")
 const adminRouter = require("./routes/adminRouter")
 const paymentRouter = require("./routes/paymentRouter")
+const packagesRouter = require("./routes/packagesRouter")
 
 
 // With this line (allow all origins for testing, update in production)
@@ -84,6 +85,9 @@ connect()
 
     //payment routes
     app.use('/payment', paymentRouter);
+
+    //packages routes
+    app.use('/packages', packagesRouter);
 
   })
   .catch((err) => console.log(err));

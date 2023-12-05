@@ -34,8 +34,14 @@ const getOneProduct = async (req, res) => {
 }
 
 const getPopularProducts = async (req, res) => {
-    const popularProducts = await productsCollection().find({popular: true}).toArray()
+    const popularProducts = await productsCollection().find({ popular: true }).toArray()
     res.send(popularProducts)
+}
+
+const searchProducts = async (req, res) => {
+    const { name } = req.query
+    const products = await productsCollection().find({ sof_name: { '$regex': name, '$options': 'i' } }).toArray()
+    res.send(products)
 }
 
 module.exports = {
@@ -45,4 +51,5 @@ module.exports = {
     deleteProduct,
     getOneProduct,
     getPopularProducts,
+    searchProducts,
 }
