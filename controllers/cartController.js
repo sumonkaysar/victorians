@@ -1,6 +1,6 @@
 const { ObjectId } = require("mongodb")
 const { cartCollection, productsCollection } = require("../mongoDBConfig/collections")
-const { readDoc, deleteDoc } = require("../utils/mongoQueries")
+const { readDoc } = require("../utils/mongoQueries")
 
 const getCartProducts = async (req, res) => {
     const products = await readDoc(cartCollection)

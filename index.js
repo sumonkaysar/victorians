@@ -14,6 +14,9 @@ const message = require("./routes/message_router");
 const messageRouter = require("./routes/message_router")
 const usersRouter = require("./routes/usersRouter")
 const chatRoutes = require("./routes/socketRouter")
+const adminRouter = require("./routes/adminRouter")
+const paymentRouter = require("./routes/paymentRouter")
+const packagesRouter = require("./routes/packagesRouter")
 
 
 const port = process.env.PORT || 5000;
@@ -28,9 +31,6 @@ app.use(express.urlencoded({ extended: false }))
 const http = require('http');
 const httpServer = http.createServer(app);
 const { Server } = require("socket.io")
-const adminRouter = require("./routes/adminRouter")
-const paymentRouter = require("./routes/paymentRouter")
-const packagesRouter = require("./routes/packagesRouter")
 
 
 // With this line (allow all origins for testing, update in production)

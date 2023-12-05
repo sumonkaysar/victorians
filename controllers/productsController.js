@@ -17,6 +17,12 @@ const saveProduct = async (req, res) => {
 }
 
 const updateProduct = async (req, res) => {
+    if (req.file?.filename) {
+        req.body.img = uploadFile(req.file.filename)
+    }
+    if (req.body.packages) {
+        req.body.packages = JSON.parse(req.body.packages)
+    }
     const result = await updateDoc(req, productsCollection)
     res.send(result)
 }
@@ -44,6 +50,11 @@ const searchProducts = async (req, res) => {
     res.send(products)
 }
 
+const makeProductPopular = async (req, res) => {
+    const result = await updateDoc(req, productsCollection)
+    res.send(result)
+}
+
 module.exports = {
     getAllProducts,
     saveProduct,
@@ -52,4 +63,5 @@ module.exports = {
     getOneProduct,
     getPopularProducts,
     searchProducts,
+    makeProductPopular,
 }
