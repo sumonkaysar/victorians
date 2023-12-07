@@ -24,7 +24,7 @@ const getMessage = async (req, res) => {
     const message = await userMessage()
       .find({
         $or: [
-          { authorId: messageUserId, receiver: { $exists: false } },
+          { authorId: messageUserId, receiver: { $exists: true } },
           { receiver: messageUserId },
         ],
       })
