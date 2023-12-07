@@ -64,7 +64,7 @@ const getMyCartProducts = async (req, res) => {
 const inCartAlready = async (req, res) => {
     const { userId, productId } = req.query
     const result = await cartCollection().findOne({ userId, "products.productId": productId })
-    res.send(!!result)
+    res.send(!!(result?.userId))
 }
 
 const getCartPackage = async (req, res) => {
