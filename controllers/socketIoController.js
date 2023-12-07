@@ -5,7 +5,7 @@ const messageReciveSound = path.join(`${process.env.SERVER}/files/messageSound/M
 
 const messageSendSound = path.join(`${process.env.SERVER}/files/messageSound/message_send_sound.mp3`)
 let activeUsers = [];
-
+console.log(activeUsers);
 const addUser = (socketId, user_id, user) => {
   const checkUser = activeUsers.some((data) => data?.user_id === user_id);
 
@@ -24,6 +24,10 @@ const findUser =(id)=>{
   return activeUsers.find(u=>u?.user_id === id)
 }
 
+const findAdmin =(id)=>{
+  return activeUsers.find(u=>u?.user.adminId === id)
+}
+
 const chatController = (io) => {
   io.on("connection", (socket) => {
 
@@ -35,12 +39,12 @@ const chatController = (io) => {
     });
 
     socket.on("sendMessage", (messageData)=>{
-
-      const user =  findUser (messageData?.receiver) 
-
+      // console.log(messageData)
+      const user = (messageData?.role === "User") ? findAdmin(messageData?.receiver) : findUser (messageData?.receiver)
+console.log(user);
       if(user !== undefined){
   
-        socket.to(user.socketId).emit("getMessage",{
+        socket.to((messageData?.role === "User") ? messageData?.receiver : user.socketId).emit("getMessage",{
           ...messageData,
           messageSound: messageReciveSound
         })
