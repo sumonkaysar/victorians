@@ -17,6 +17,12 @@ const saveProduct = async (req, res) => {
 }
 
 const updateProduct = async (req, res) => {
+    if (req.file?.filename) {
+        req.body.img = uploadFile(req.file.filename)
+    }
+    if (req.body.packages) {
+        req.body.packages = JSON.parse(req.body.packages)
+    }
     const result = await updateDoc(req, productsCollection)
     res.send(result)
 }
@@ -34,8 +40,31 @@ const getOneProduct = async (req, res) => {
 }
 
 const getPopularProducts = async (req, res) => {
-    const popularProducts = await productsCollection().find({popular: true}).toArray()
+    const popularProducts = await productsCollection().find({ popular: true }).toArray()
     res.send(popularProducts)
+}
+
+const searchProducts = async (req, res) => {
+    const { name } = req.query
+    const products = await productsCollection().find({ sof_name: { '$regex': name, '$options': 'i' } }).toArray()
+    res.send(products)
+}
+
+const makeProductPopular = async (req, res) => {
+    const result = await updateDoc(req, productsCollection)
+    res.send(result)
+}
+
+const getPackageProducts = async (req, res) => {
+    const {name} = req.query
+    const result = await productsCollection().find({"packages.packageName": name}).toArray()
+    res.send(result)
+}
+
+const getCategoryProducts = async (req, res) => {
+    const {name} = req.query
+    const result = await productsCollection().find({"category": name}).toArray()
+    res.send(result)
 }
 
 module.exports = {
@@ -45,4 +74,8 @@ module.exports = {
     deleteProduct,
     getOneProduct,
     getPopularProducts,
+    searchProducts,
+    makeProductPopular,
+    getPackageProducts,
+    getCategoryProducts,
 }

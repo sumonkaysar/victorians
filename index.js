@@ -14,6 +14,9 @@ const message = require("./routes/message_router");
 const messageRouter = require("./routes/message_router")
 const usersRouter = require("./routes/usersRouter")
 const chatRoutes = require("./routes/socketRouter")
+const adminRouter = require("./routes/adminRouter")
+const paymentRouter = require("./routes/paymentRouter")
+const packagesRouter = require("./routes/packagesRouter")
 
 
 const port = process.env.PORT || 5000;
@@ -22,7 +25,7 @@ const port = process.env.PORT || 5000;
 const app = express();
 app.use(cors())
 app.use(express.json())
-app.use(express.urlencoded({extended:false}))
+app.use(express.urlencoded({ extended: false }))
 
 //socket.io require http server
 const http = require('http');
@@ -68,14 +71,23 @@ connect()
     // coupons routes
     app.use("/coupons", couponsRouter)
 
-    //message
+    //message routes
     app.use("/message", messageRouter);
 
-    //usersGet
+    // users routes
     app.use("/users", usersRouter);
 
     //socket.io
     app.use('/chat', chat);
+
+    //admin routes
+    app.use('/admin', adminRouter);
+
+    //payment routes
+    app.use('/payment', paymentRouter);
+
+    //packages routes
+    app.use('/packages', packagesRouter);
 
   })
   .catch((err) => console.log(err));
