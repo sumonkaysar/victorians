@@ -1,7 +1,12 @@
 const { packagesCollection } = require("../mongoDBConfig/collections")
-const { createDoc } = require("../utils/mongoQueries")
+const { createDoc, readDoc } = require("../utils/mongoQueries")
 const { uploadFile } = require("../utils/uploadFile")
 // const { deleteFiles } = require("../utils/fileReadAndDelete")
+
+const getAllPackages = async (req, res) => {
+    const packages = await readDoc(packagesCollection)
+    res.send(packages)
+}
 
 const savePackage = async (req, res) => {
     req.body.packageImg = uploadFile(req.file.filename)
@@ -11,5 +16,6 @@ const savePackage = async (req, res) => {
 }
 
 module.exports = {
+    getAllPackages,
     savePackage,
 }

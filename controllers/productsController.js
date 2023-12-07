@@ -55,6 +55,18 @@ const makeProductPopular = async (req, res) => {
     res.send(result)
 }
 
+const getPackageProducts = async (req, res) => {
+    const {name} = req.query
+    const result = await productsCollection().find({"packages.packageName": name}).toArray()
+    res.send(result)
+}
+
+const getCategoryProducts = async (req, res) => {
+    const {name} = req.query
+    const result = await productsCollection().find({"category": name}).toArray()
+    res.send(result)
+}
+
 module.exports = {
     getAllProducts,
     saveProduct,
@@ -64,4 +76,6 @@ module.exports = {
     getPopularProducts,
     searchProducts,
     makeProductPopular,
+    getPackageProducts,
+    getCategoryProducts,
 }
