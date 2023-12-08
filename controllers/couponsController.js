@@ -1,5 +1,5 @@
 const { couponsCollection } = require("../mongoDBConfig/collections")
-const { readDoc, createDoc, updateDoc, deleteDoc, readOneDoc } = require("../utils/mongoQueries")
+const { readDoc, createDoc, updateDoc, deleteDoc } = require("../utils/mongoQueries")
 
 const getAllCoupons = async (req, res) => {
     const products = await readDoc(couponsCollection)

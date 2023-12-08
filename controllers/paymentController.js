@@ -8,7 +8,7 @@ const server = process.env.SERVER
 const client = process.env.CLIENT
 
 // IS THE SERVER IN LIVE(PODUCTION)
-const is_live = process.env.IS_LIVE
+const is_live = false
 
 const makePayment = async (req, res) => {
   const { userId, products } = req.body
@@ -88,7 +88,8 @@ const paymentSuccess = async (req, res) => {
   const result = await purchasesCollection().insertOne({
     products,
     userId,
-    paymentData: req.body
+    paymentData: req.body,
+    purchasingTime: new Date().getTime
   })
   if (!result) {
     return res.status(400).json({ error: 'Something went wrong' })

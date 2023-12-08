@@ -26,6 +26,7 @@ const app = express();
 app.use(cors())
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
+app.use(express.static('public'))
 
 //socket.io require http server
 const http = require('http');
@@ -41,56 +42,60 @@ const io = new Server(httpServer, {
 });
 const chat = chatRoutes(io);;
 
+try {
 
-connect()
-  .then(() => {
-    // products routes
-    app.use("/products", productsRouter);
+  connect()
+    .then(() => {
+      // products routes
+      app.use("/products", productsRouter);
 
-    // cart routes
-    app.use("/cart", cartRouter);
+      // cart routes
+      app.use("/cart", cartRouter);
 
-    // reviews routes
-    app.use("/reviews", reviewsRouter);
+      // reviews routes
+      app.use("/reviews", reviewsRouter);
 
-    // advertised products routes
-    app.use("/advertisedProducts", advertisedProductsRouter);
+      // advertised products routes
+      app.use("/advertisedProducts", advertisedProductsRouter);
 
-    // show files routes
-    app.use("/files", showFilesRouter);
+      // show files routes
+      app.use("/files", showFilesRouter);
 
-    // memberships routes
-    app.use("/memberships", membershipsRouter);
+      // memberships routes
+      app.use("/memberships", membershipsRouter);
 
-    // authentication and authorization routes
-    app.use("/auth", authRouter);
+      // authentication and authorization routes
+      app.use("/auth", authRouter);
 
-    // purchases routes
-    app.use("/purchases", purchasesRouter)
+      // purchases routes
+      app.use("/purchases", purchasesRouter)
 
-    // coupons routes
-    app.use("/coupons", couponsRouter)
+      // coupons routes
+      app.use("/coupons", couponsRouter)
 
-    //message routes
-    app.use("/message", messageRouter);
+      //message routes
+      app.use("/message", messageRouter);
 
-    // users routes
-    app.use("/users", usersRouter);
+      // users routes
+      app.use("/users", usersRouter);
 
-    //socket.io
-    app.use('/chat', chat);
+      //socket.io
+      app.use('/chat', chat);
 
-    //admin routes
-    app.use('/admin', adminRouter);
+      //admin routes
+      app.use('/admin', adminRouter);
 
-    //payment routes
-    app.use('/payment', paymentRouter);
+      //payment routes
+      app.use('/payment', paymentRouter);
 
-    //packages routes
-    app.use('/packages', packagesRouter);
+      //packages routes
+      app.use('/packages', packagesRouter);
 
-  })
-  .catch((err) => console.log(err));
+    })
+    .catch((err) => console.log(err));
+} catch (err) {
+  console.log(err);
+}
 
 app.get("/", (_, res) => {
   res.send("Server is running");
