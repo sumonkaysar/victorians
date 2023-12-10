@@ -58,7 +58,7 @@ const getMyCartProducts = async (req, res) => {
         }
     ]).toArray()
     const totalPrice = cartProducts.reduce((total, product) => total + (product.packages[0] ? Number(product.packages[0].packagePrice) : 0), 0)
-    res.send({ cartProducts, totalPrice } || {})
+    res.send({ cartProducts, totalPrice, cartId: myCart._id } || {})
 }
 
 const inCartAlready = async (req, res) => {
