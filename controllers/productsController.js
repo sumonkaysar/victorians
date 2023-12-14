@@ -1,5 +1,5 @@
 const { ObjectId } = require("mongodb")
-const { productsCollection } = require("../mongoDBConfig/collections")
+const { productsCollection, premiumCollection, packagesCollection } = require("../mongoDBConfig/collections")
 const { readDoc, createDoc, updateDoc, deleteDoc, readOneDoc } = require("../utils/mongoQueries")
 const { uploadFile } = require("../utils/uploadFile")
 const { deleteFiles } = require("../utils/fileReadAndDelete")
@@ -56,15 +56,24 @@ const makeProductPopular = async (req, res) => {
 }
 
 const getPackageProducts = async (req, res) => {
-    const {name} = req.query
-    const result = await productsCollection().find({"packages.packageName": name}).toArray()
+    const { name } = req.query
+    const result = await productsCollection().find({ "packages.packageName": name }).toArray()
     res.send(result)
 }
 
 const getCategoryProducts = async (req, res) => {
-    const {name} = req.query
-    const result = await productsCollection().find({"category": name}).toArray()
+    const { name } = req.query
+    const result = await productsCollection().find({ "category": name }).toArray()
     res.send(result)
+}
+
+const getMyPaidProducts = async (req, res) => {
+    const { userId } = req.query
+    const paidProductsInfo = await premiumCollection().findOne({ userId })
+    if (!(paidProductsInfo?.products?.length > 0)) {
+        return res.json([])
+    }
+    res.send(paidProductsInfo)
 }
 
 module.exports = {
@@ -78,4 +87,5 @@ module.exports = {
     makeProductPopular,
     getPackageProducts,
     getCategoryProducts,
+    getMyPaidProducts,
 }

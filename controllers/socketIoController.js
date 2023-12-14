@@ -9,7 +9,6 @@ const messageSendSound = path.join(
   `${process.env.SERVER}/files/messageSound/message_send_sound.mp3`
 );
 let activeUsers = [];
-
 const addUser = (socketId, user_id, user) => {
   const checkUser = activeUsers.some((data) => data?.user_id === user_id);
 
