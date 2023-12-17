@@ -10,6 +10,8 @@ reviewsRouter.patch("/:id", updateReview)
 
 reviewsRouter.delete("/:id", deleteReview)
 
-reviewsRouter.get("/:id", getOneReview)
+reviewsRouter.get("/user/:userId/product/:productId", getOneReview)
+
+// reviewsRouter.get("/:id", getOneReview)
 
 module.exports = reviewsRouter
