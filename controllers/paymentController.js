@@ -1,14 +1,12 @@
-const SSLCommerzPayment = require('sslcommerz-lts')
+const axios = require("axios");
 const { productsCollection, usersCollection, pendingPaymentsCollection, purchasesCollection, premiumCollection, cartCollection, packagesCollection } = require('../mongoDBConfig/collections')
 const { ObjectId } = require('mongodb')
 
+const aamarpayURL = process.env.AAMARPAY_URL
 const store_id = process.env.STORE_ID
-const store_passwd = process.env.STORE_PASS
+const signature_key = process.env.SIGNATURE_KEY
 const server = process.env.SERVER
 const client = process.env.CLIENT
-
-// IS THE SERVER IN LIVE(PODUCTION)
-const is_live = false
 
 const makeProductsPayment = async (req, res) => {
   const { products } = req.body
@@ -33,7 +31,7 @@ const makeProductsPayment = async (req, res) => {
       }
     }
   ]).toArray()
-  req.body.products.forEach(product => product.duration = dbProducts.find(dbProduct => dbProduct._id.valueOf() == product.productId).packages[0].packageDuration )
+  req.body.products.forEach(product => product.duration = dbProducts.find(dbProduct => dbProduct._id.valueOf() == product.productId).packages[0].packageDuration)
   const totalPrice = dbProducts.reduce((total, product) => total + (product.packages[0] ? Number(product.packages[0].packagePrice) : 0), 0)
   const names = dbProducts.map(product => product.sof_name).join(", ")
   makePayment(req, res, totalPrice, names)
@@ -67,11 +65,11 @@ const makePayment = async (req, res, totalPrice, names) => {
   if (!index) {
     return res.status(400).json({ error: 'Something went wrong' })
   }
-  const tarnsactionId = `VICTORIANS_${new Date().getTime()}_${Math.random().toString(36).slice(2).toUpperCase()}`
+  const transactionId = `VICTORIANS_${new Date().getTime()}_${Math.random().toString(36).slice(2).toUpperCase()}`
   const result = await pendingPaymentsCollection().insertOne({
     userId,
     products,
-    tarnsactionId,
+    transactionId,
     cartId,
     bundleId,
     expireAt: new Date(Date.now() + 2 * 86400000) // remain for 2 days
@@ -80,36 +78,42 @@ const makePayment = async (req, res, totalPrice, names) => {
     return res.status(400).json({ error: 'Something went wrong' })
   }
   const user = await usersCollection().findOne({ _id: new ObjectId(userId) })
-
-  const data = {
-    total_amount: totalPrice,
-    currency: 'BDT',
-    tran_id: tarnsactionId,
+  const formData = {
+    signature_key,
+    store_id,
+    amount: totalPrice,
+    currency: "BDT",
+    tran_id: transactionId,
+    desc: names,
+    cus_name: `${user.firstName} ${user.lastName}`,
+    cus_email: user.email,
+    cus_phone: user.mobile || "+8801700000000",
+    cus_add1: user.location,
+    // cus_add2: "Dhaka",
+    // cus_city: "Dhaka",
+    // cus_country: "Bangladesh",
     success_url: `${server}/payment/success`,
     fail_url: `${server}/payment/failure`,
     cancel_url: `${server}/payment/cancel`,
-    ipn_url: `${server}/payment/ipn`,
-    shipping_method: 'NO',
-    product_name: names,
-    product_category: 'Software',
-    product_profile: 'general',
-    cus_name: `${user.firstName} ${user.lastName}`,
-    cus_email: user.email,
-    cus_add1: user.location,
-    cus_country: 'Bangladesh',
-    cus_phone: '01700000000',
+    type: "json",
   };
-  // return console.log(data);
-  const sslcz = new SSLCommerzPayment(store_id, store_passwd, is_live)
-  sslcz.init(data).then(apiResponse => {
-    let GatewayPageURL = apiResponse.GatewayPageURL
-    res.send({ GatewayPageURL })
-  });
+  const { data } = await axios.post(aamarpayURL, formData);
+  if (data.result !== "true") {
+    let errorMessage = "";
+    for (let key in data) {
+      errorMessage += data[key] + ". ";
+    }
+    return res.status(500).json({
+      title: "error",
+      errorMessage,
+    });
+  }
+  res.status(200).send({ payment_url: data.payment_url });
 }
 
 const paymentSuccess = async (req, res) => {
-  const { tran_id: tarnsactionId } = req.body
-  const pendingPayment = await pendingPaymentsCollection().findOne({ tarnsactionId })
+  const { mer_txnid: transactionId } = req.body
+  const pendingPayment = await pendingPaymentsCollection().findOne({ transactionId })
   const { products, userId, bundleId } = pendingPayment
   const purchasingTime = new Date().getTime()
   const result = await purchasesCollection().insertOne({
@@ -131,7 +135,7 @@ const paymentSuccess = async (req, res) => {
   if (!result2) {
     return res.status(400).json({ error: 'Something went wrong' })
   }
-  const result3 = await pendingPaymentsCollection().deleteOne({ tarnsactionId })
+  const result3 = await pendingPaymentsCollection().deleteOne({ transactionId })
   if (!result3) {
     return res.status(400).json({ error: 'Something went wrong' })
   }
@@ -150,16 +154,10 @@ const paymentCancel = async (req, res) => {
   res.redirect(`${client}/payment?status=cancelled`)
 }
 
-const paymentIpn = async (req, res) => {
-  res.redirect(`${client}/payment?status=ipn`)
-}
-
-
 module.exports = {
   makeProductsPayment,
   makePackagePayment,
   paymentSuccess,
   paymentFailure,
   paymentCancel,
-  paymentIpn,
 }
