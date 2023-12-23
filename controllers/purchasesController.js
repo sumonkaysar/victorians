@@ -2,11 +2,11 @@ const { purchasesCollection, notificationsCollection } = require("../mongoDBConf
 const { readDoc } = require("../utils/mongoQueries")
 
 const getAllPurchases = async (req, res) => {
-    const purchases = await readDoc(purchasesCollection)
+    const purchases = await purchasesCollection().find({}).sort({purchasingTime: -1}).toArray()
     const monthlyPurchases = {};
     purchases.forEach(item => {
         const purchaseDate = new Date(item.purchasingTime);
-        const yearMonth = `${purchaseDate.getFullYear()}-${purchaseDate.getMonth() + 1}-${purchaseDate.getDate()}`;
+        const yearMonth = `${purchaseDate.getFullYear()}-${purchaseDate.getMonth() + 1}`;
         if (!monthlyPurchases[yearMonth]) {
             monthlyPurchases[yearMonth] = [];
         }
