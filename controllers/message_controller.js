@@ -4,6 +4,7 @@ const { ObjectId } = require("mongodb");
 const { uploadFile } = require("../utils/uploadFile");
 
 const saveMessage = async (req, res) => {
+  console.log(req.body.messageData)
   req.body = JSON.parse(req.body.messageData);
   if (req.file?.filename) {
     req.body.message.videoOrImg = uploadFile(req.file.filename);
