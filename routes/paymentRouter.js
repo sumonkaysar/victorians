@@ -17,7 +17,5 @@ paymentRouter.post("/failure", paymentFailure)
 // payment cancel
 paymentRouter.post("/cancel", paymentCancel)
 
-// payment ipn
-paymentRouter.post("/ipn", paymentIpn)
 
 module.exports = paymentRouter

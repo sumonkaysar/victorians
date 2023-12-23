@@ -37,6 +37,12 @@ const getOneReview = async (req, res) => {
     res.send(review || {})
 }
 
+const getSingleProductReviews = async (req, res) => {
+    const { productId } = req.params
+    const reviews = await reviewsCollection().find({ productId, status: "approved" }).toArray()
+    res.send(reviews || [])
+}
+
 
 module.exports = {
     getAllReviewsOfProduct,
@@ -44,4 +50,5 @@ module.exports = {
     updateReview,
     deleteReview,
     getOneReview,
+    getSingleProductReviews,
 }
