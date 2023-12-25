@@ -2,7 +2,7 @@ const { productsCollection } = require("../mongoDBConfig/collections")
 const { readDoc, createDoc, updateDoc, deleteDoc, readOneDoc } = require("../utils/mongoQueries")
 
 const getAllProducts = async (req, res) => {
-    const products = await readDoc(productsCollection)
+    const products = await readDoc(productsCollection) 
     res.send(products)
 }
 
