@@ -1,5 +1,5 @@
 const axios = require("axios");
-const { productsCollection, usersCollection, pendingPaymentsCollection, purchasesCollection, premiumCollection, cartCollection, packagesCollection } = require('../mongoDBConfig/collections')
+const { productsCollection, usersCollection, pendingPaymentsCollection, purchasesCollection, premiumCollection, cartCollection, packagesCollection, notificationsCollection } = require('../mongoDBConfig/collections')
 const { ObjectId } = require('mongodb')
 
 const aamarpayURL = process.env.AAMARPAY_URL
@@ -115,6 +115,7 @@ const paymentSuccess = async (req, res) => {
   const { mer_txnid: transactionId } = req.body
   const pendingPayment = await pendingPaymentsCollection().findOne({ transactionId })
   const { products, userId, bundleId } = pendingPayment
+  
   const purchasingTime = new Date().getTime()
   const result = await purchasesCollection().insertOne({
     products,
@@ -126,7 +127,7 @@ const paymentSuccess = async (req, res) => {
   if (!result) {
     return res.status(400).json({ error: 'Something went wrong' })
   }
-  const newProducts = products.map(product => ({ ...product, purchasingTime }))
+  const newProducts = products.map(product => ({ ...product, purchasingTime, adminSeen: false }))
   const result2 = await premiumCollection().updateOne({ userId }, {
     $addToSet: {
       products: { $each: newProducts }
@@ -141,6 +142,23 @@ const paymentSuccess = async (req, res) => {
   }
   const result4 = await cartCollection().deleteOne({ _id: new ObjectId(pendingPayment.cartId) })
   if (!result4) {
+    return res.status(400).json({ error: 'Something went wrong' })
+  }
+  // notification
+  const index = await notificationsCollection().createIndex({ "expireAt": 1 }, { expireAfterSeconds: 0 })
+  if (!index) {
+    return res.status(400).json({ error: 'Something went wrong' })
+  }
+  const result5 = await notificationsCollection().insertOne({
+    userId,
+    productsIds: products.map(product => product.productId),
+    type: "purchased",
+    seen: false,
+    read: false,
+    time: purchasingTime,
+    expireAt: new Date(Date.now() + 30 * 86400000) // remain for 30 days
+  })
+  if (!result5) {
     return res.status(400).json({ error: 'Something went wrong' })
   }
   res.redirect(`${client}/payment?status=success`)

@@ -1,5 +1,5 @@
 const { ObjectId } = require("mongodb")
-const { productsCollection, premiumCollection, packagesCollection } = require("../mongoDBConfig/collections")
+const { productsCollection, premiumCollection } = require("../mongoDBConfig/collections")
 const { readDoc, createDoc, updateDoc, deleteDoc, readOneDoc } = require("../utils/mongoQueries")
 const { uploadFile } = require("../utils/uploadFile")
 const { deleteFiles } = require("../utils/fileReadAndDelete")
@@ -76,6 +76,17 @@ const getMyPaidProducts = async (req, res) => {
     res.send(paidProductsInfo)
 }
 
+const getAllProductsNamesByProductIds = async (req, res) => {
+    const productIds = req.body.map(id => new ObjectId(id))
+    const products = await productsCollection().aggregate([
+        {
+            $match: { _id: { $in: productIds } }
+        },
+        { $project: { sof_name: 1 } },
+    ]).toArray()
+    res.send({status: 200, products})
+}
+
 module.exports = {
     getAllProducts,
     saveProduct,
@@ -88,4 +99,5 @@ module.exports = {
     getPackageProducts,
     getCategoryProducts,
     getMyPaidProducts,
+    getAllProductsNamesByProductIds,
 }

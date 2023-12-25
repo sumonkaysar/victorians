@@ -32,6 +32,7 @@ app.use(express.static('public'))
 const http = require('http');
 const httpServer = http.createServer(app);
 const { Server } = require("socket.io")
+const notificationRouter = require("./routes/notificationsRouter")
 
 
 // With this line (allow all origins for testing, update in production)
@@ -90,6 +91,9 @@ try {
 
       //packages routes
       app.use('/packages', packagesRouter);
+
+      //packages routes
+      app.use('/notifications', notificationRouter);
 
     })
     .catch((err) => console.log(err));

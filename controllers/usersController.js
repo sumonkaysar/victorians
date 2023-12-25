@@ -1,5 +1,5 @@
-const { usersCollection } = require("../mongoDBConfig/collections")
-const { readDoc, updateDoc, deleteDoc, readOneDoc } = require("../utils/mongoQueries")
+const { usersCollection, premiumCollection } = require("../mongoDBConfig/collections")
+const { readDoc, updateDoc } = require("../utils/mongoQueries")
 const { uploadFile } = require("../utils/uploadFile")
 const { deleteFiles } = require("../utils/fileReadAndDelete")
 const { ObjectId } = require('mongodb');
@@ -41,12 +41,34 @@ const getOneUser = async (req, res) => {
     console.error(error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
-};
+}
+
+const getPremiumUsers = async (req, res) => {
+  const users = await premiumCollection().aggregate([
+    { "$addFields": { "id": { "$toObjectId": "$userId" } } },
+    {
+      "$lookup": {
+        "from": "users",
+        "localField": "id",
+        "foreignField": "_id",
+        "as": "user"
+      }
+    },
+    {
+      $sort: { "products.purchasingTime": -1 }
+    },
+    {
+      $unwind: "$user"
+    }
+  ]).toArray()
+  res.send(users)
+}
 
 
 module.exports = {
   getUsers,
   updateUser,
   getUserRole,
-  getOneUser
+  getOneUser,
+  getPremiumUsers,
 }
