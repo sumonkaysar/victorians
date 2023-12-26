@@ -1,15 +1,14 @@
 const fs = require("fs");
 const { readFiles } = require("../utils/fileReadAndDelete");
 
-const getAudios = async (req, res) => {
-    readFiles(res, req.params.name)
-}
-
 const showUploadedFiles = async (req, res) => {
-    readFiles(res, req.params.name)
+    try {
+        readFiles(res, req.params.name)
+    } catch (err) {
+        console.log(err)
+    }
 }
 
 module.exports = {
     showUploadedFiles,
-    getAudios,
 }

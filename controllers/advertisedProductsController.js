@@ -2,28 +2,48 @@ const { productsCollection } = require("../mongoDBConfig/collections")
 const { readDoc, createDoc, updateDoc, deleteDoc, readOneDoc } = require("../utils/mongoQueries")
 
 const getAllProducts = async (req, res) => {
-    const products = await readDoc(productsCollection)
-    res.send(products)
+    try {
+        const products = await readDoc(productsCollection)
+        res.send(products)
+    } catch (err) {
+        console.log(err)
+    }
 }
 
 const saveProduct = async (req, res) => {
-    const result = await createDoc(req, productsCollection)
-    res.send(result)
+    try {
+        const result = await createDoc(req, productsCollection)
+        res.send(result)
+    } catch (err) {
+        console.log(err)
+    }
 }
 
 const updateProduct = async (req, res) => {
-    const result = await updateDoc(req, productsCollection)
-    res.send(result)
+    try {
+        const result = await updateDoc(req, productsCollection)
+        res.send(result)
+    } catch (err) {
+        console.log(err)
+    }
 }
 
 const deleteProduct = async (req, res) => {
-    const result = await deleteDoc(req, productsCollection)
-    res.send(result)
+    try {
+        const result = await deleteDoc(req, productsCollection)
+        res.send(result)
+    } catch (err) {
+        console.log(err)
+    }
 }
 
 const getOneProduct = async (req, res) => {
-    const result = await readOneDoc(req, productsCollection)
-    res.send(result || {})
+    try {
+        const result = await readOneDoc(req, productsCollection)
+        res.send(result || {})
+    } catch (err) {
+        console.log(err)
+    }
 }
 
 

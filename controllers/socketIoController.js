@@ -24,7 +24,6 @@ const userRemove = (socketId) => {
 };
 
 const findUser = (id) => {
- 
   return activeUsers.find((u) => u?.user_id === id);
 };
 

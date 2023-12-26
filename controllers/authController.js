@@ -34,19 +34,23 @@ const signup = async (req, res) => {
 }
 
 const login = async (req, res) => {
-    const { email, password } = req.body
-    const dbPassword = await passwordsCollection().findOne({ email })
-    if (dbPassword) {
-        const match = await bcrypt.compare(password, dbPassword.hash);
+    try {
+        const { email, password } = req.body
+        const dbPassword = await passwordsCollection().findOne({ email })
+        if (dbPassword) {
+            const match = await bcrypt.compare(password, dbPassword.hash);
 
-        if (match) {
-            const token = jwt.sign({ user: { email } }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '7d' })
-            const user = await usersCollection().findOne({ email })
-            return res.status(200).send({ status: 200, message: "Logged in successfully", token, user })
+            if (match) {
+                const token = jwt.sign({ user: { email } }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '7d' })
+                const user = await usersCollection().findOne({ email })
+                return res.status(200).send({ status: 200, message: "Logged in successfully", token, user })
+            }
+            return res.status(403).send({ status: 403, message: "Password is incorrect" })
         }
-        return res.status(403).send({ status: 403, message: "Password is incorrect" })
+        res.status(403).send({ status: 403, message: "This email is not registered" })
+    } catch (err) {
+        console.log(err)
     }
-    res.status(403).send({ status: 403, message: "This email is not registered" })
 }
 
 const changePassword = async (req, res) => {
@@ -56,7 +60,7 @@ const changePassword = async (req, res) => {
         const dbPassword = await passwordsCollection().findOne({ email })
         if (dbPassword) {
             const match = await bcrypt.compare(oldPassword, dbPassword.hash);
-    
+
             if (match) {
                 const hash = await bcrypt.hash(newPassword, 10);
                 const result = await passwordsCollection().updateOne({ email }, {
@@ -82,9 +86,13 @@ const forgotPassword = async (req, res) => {
 }
 
 const isLoggedIn = async (req, res) => {
-    const { email } = req.decoded.user
-    const user = await usersCollection().findOne({ email })
-    res.status(200).send({ status: 200, message: 'logged in', user })
+    try {
+        const { email } = req.decoded.user
+        const user = await usersCollection().findOne({ email })
+        res.status(200).send({ status: 200, message: 'logged in', user })
+    } catch (err) {
+        console.log(err)
+    }
 }
 
 module.exports = {

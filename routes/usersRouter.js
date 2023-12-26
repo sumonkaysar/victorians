@@ -1,4 +1,4 @@
-const { getUsers, getOneUser, getUserRole } = require("../controllers/usersController")
+const { getUsers, getOneUser, getUserRole, getPremiumUsers } = require("../controllers/usersController")
 // const { upload } = require("../utils/uploadFile")
 
 const usersRouter = require("express").Router()
@@ -6,6 +6,8 @@ const usersRouter = require("express").Router()
 usersRouter.get("/", getUsers)
 
 usersRouter.get("/role", getUserRole)
+
+usersRouter.get("/premium", getPremiumUsers)
 
 usersRouter.get("/:id", getOneUser)
 

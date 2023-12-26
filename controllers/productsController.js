@@ -1,79 +1,138 @@
 const { ObjectId } = require("mongodb")
-const { productsCollection, premiumCollection, packagesCollection } = require("../mongoDBConfig/collections")
+const { productsCollection, premiumCollection } = require("../mongoDBConfig/collections")
 const { readDoc, createDoc, updateDoc, deleteDoc, readOneDoc } = require("../utils/mongoQueries")
 const { uploadFile } = require("../utils/uploadFile")
 const { deleteFiles } = require("../utils/fileReadAndDelete")
 
 const getAllProducts = async (req, res) => {
-    const products = await readDoc(productsCollection)
-    res.send(products)
+    try {
+        const products = await readDoc(productsCollection)
+        res.send(products)
+    } catch (err) {
+        console.log(err)
+    }
 }
 
 const saveProduct = async (req, res) => {
-    req.body.img = uploadFile(req.file.filename)
-    req.body.packages = JSON.parse(req.body.packages)
-    const result = await createDoc(req, productsCollection)
-    res.send(result)
+    try {
+        req.body.img = uploadFile(req.file.filename)
+        req.body.packages = JSON.parse(req.body.packages)
+        const result = await createDoc(req, productsCollection)
+        res.send(result)
+    } catch (err) {
+        console.log(err)
+    }
 }
 
 const updateProduct = async (req, res) => {
-    if (req.file?.filename) {
-        req.body.img = uploadFile(req.file.filename)
+    try {
+        if (req.file?.filename) {
+            req.body.img = uploadFile(req.file.filename)
+        }
+        if (req.body.packages) {
+            req.body.packages = JSON.parse(req.body.packages)
+        }
+        const result = await updateDoc(req, productsCollection)
+        res.send(result)
+    } catch (err) {
+        console.log(err)
     }
-    if (req.body.packages) {
-        req.body.packages = JSON.parse(req.body.packages)
-    }
-    const result = await updateDoc(req, productsCollection)
-    res.send(result)
 }
 
 const deleteProduct = async (req, res) => {
-    const product = await productsCollection().findOne({ _id: new ObjectId(req.params.id) })
-    deleteFiles(product.image.split("files/")[1])
-    const result = await deleteDoc(req, productsCollection)
-    res.send(result)
+    try {
+        const product = await productsCollection().findOne({ _id: new ObjectId(req.params.id) })
+        deleteFiles(product.image.split("files/")[1])
+        const result = await deleteDoc(req, productsCollection)
+        res.send(result)
+    } catch (err) {
+        console.log(err)
+    }
 }
 
 const getOneProduct = async (req, res) => {
-    const result = await readOneDoc(req, productsCollection)
-    res.send(result || {})
+    try {
+        const result = await readOneDoc(req, productsCollection)
+        res.send(result || {})
+    } catch (err) {
+        console.log(err)
+    }
 }
 
 const getPopularProducts = async (req, res) => {
-    const popularProducts = await productsCollection().find({ popular: true }).toArray()
-    res.send(popularProducts)
+    try {
+        const popularProducts = await productsCollection().find({ popular: true }).toArray()
+        res.send(popularProducts)
+    } catch (err) {
+        console.log(err)
+    }
 }
 
 const searchProducts = async (req, res) => {
-    const { name } = req.query
-    const products = await productsCollection().find({ sof_name: { '$regex': name, '$options': 'i' } }).toArray()
-    res.send(products)
+    try {
+        const { name } = req.query
+        const products = await productsCollection().find({ sof_name: { '$regex': name, '$options': 'i' } }).toArray()
+        res.send(products)
+    } catch (err) {
+        console.log(err)
+    }
 }
 
 const makeProductPopular = async (req, res) => {
-    const result = await updateDoc(req, productsCollection)
-    res.send(result)
+    try {
+        const result = await updateDoc(req, productsCollection)
+        res.send(result)
+    } catch (err) {
+        console.log(err)
+    }
 }
 
 const getPackageProducts = async (req, res) => {
-    const { name } = req.query
-    const result = await productsCollection().find({ "packages.packageName": name }).toArray()
-    res.send(result)
+    try {
+        const { name } = req.query
+        const result = await productsCollection().find({ "packages.packageName": name }).toArray()
+        res.send(result)
+    } catch (err) {
+        console.log(err)
+    }
 }
 
 const getCategoryProducts = async (req, res) => {
-    const { name } = req.query
-    const result = await productsCollection().find({ "category": name }).toArray()
-    res.send(result)
+    try {
+        const { name } = req.query
+        const result = await productsCollection().find({ "category": name }).toArray()
+        res.send(result)
+    } catch (err) {
+        console.log(err)
+    }
 }
 
 const getMyPaidProducts = async (req, res) => {
-    const { userId } = req.query
-    const paidProductsInfo = await premiumCollection().findOne({ userId })
-    if (!(paidProductsInfo?.products?.length > 0)) {
-        return res.json([])
+    try {
+        const { userId } = req.query
+        const paidProductsInfo = await premiumCollection().findOne({ userId })
+        if (!(paidProductsInfo?.products?.length > 0)) {
+            return res.json([])
+        }
+        res.send(paidProductsInfo)
+    } catch (err) {
+        console.log(err)
     }
-    res.send(paidProductsInfo)
+}
+
+const getAllProductsNamesByProductIds = async (req, res) => {
+    try {
+        const productIds = req.body.map(id => new ObjectId(id))
+        const products = await productsCollection().aggregate([
+            {
+                $match: { _id: { $in: productIds } }
+            },
+            { $project: { sof_name: 1 } },
+        ]).toArray()
+        res.send({ status: 200, products })
+    } catch (err) {
+        console.log(err)
+    }
 }
 
 module.exports = {
@@ -88,4 +147,5 @@ module.exports = {
     getPackageProducts,
     getCategoryProducts,
     getMyPaidProducts,
+    getAllProductsNamesByProductIds,
 }
