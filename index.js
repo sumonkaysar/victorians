@@ -6,7 +6,6 @@ const cartRouter = require("./routes/cartRouter")
 const reviewsRouter = require("./routes/reviewsRouter")
 const advertisedProductsRouter = require("./routes/advertisedProductsRouter")
 const showFilesRouter = require("./routes/showFilesRouter")
-const membershipsRouter = require("./routes/membershipsRouter")
 const authRouter = require("./routes/authRouter")
 const couponsRouter = require("./routes/couponsRouter")
 const purchasesRouter = require("./routes/purchasesRouter")
@@ -61,9 +60,6 @@ try {
 
       // show files routes
       app.use("/files", showFilesRouter);
-
-      // memberships routes
-      app.use("/memberships", membershipsRouter);
 
       // authentication and authorization routes
       app.use("/auth", authRouter);

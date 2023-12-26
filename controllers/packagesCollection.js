@@ -4,21 +4,33 @@ const { uploadFile } = require("../utils/uploadFile")
 // const { deleteFiles } = require("../utils/fileReadAndDelete")
 
 const getAllPackages = async (req, res) => {
-    const packages = await readDoc(packagesCollection)
-    res.send(packages)
+    try {
+        const packages = await readDoc(packagesCollection)
+        res.send(packages)
+    } catch (err) {
+        console.log(err)
+    }
 }
 
 const savePackage = async (req, res) => {
-    const result = await createDoc(req, packagesCollection)
-    res.send(result)
+    try {
+        const result = await createDoc(req, packagesCollection)
+        res.send(result)
+    } catch (err) {
+        console.log(err)
+    }
 }
 
 const getAPackage = async (req, res) => {
-    if (req.params.id !== "undefined") {
-        const package = await readOneDoc(req, packagesCollection)
-        return res.send(package)
+    try {
+        if (req.params.id !== "undefined") {
+            const package = await readOneDoc(req, packagesCollection)
+            return res.send(package)
+        }
+        res.send({})
+    } catch (err) {
+        console.log(err)
     }
-    res.send({})
 }
 
 module.exports = {

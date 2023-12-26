@@ -1,24 +1,36 @@
 const { usersCollection, premiumCollection } = require("../mongoDBConfig/collections")
 const { readDoc, updateDoc } = require("../utils/mongoQueries")
-const { uploadFile } = require("../utils/uploadFile")
-const { deleteFiles } = require("../utils/fileReadAndDelete")
+// const { uploadFile } = require("../utils/uploadFile")
+// const { deleteFiles } = require("../utils/fileReadAndDelete")
 const { ObjectId } = require('mongodb');
 
 const getUsers = async (req, res) => {
-  const users = await readDoc(usersCollection)
-  res.send(users)
+  try {
+    const users = await readDoc(usersCollection)
+    res.send(users)
+  } catch (err) {
+    console.log(err)
+  }
 }
 
 const updateUser = async (req, res) => {
-  const result = await updateDoc(req, usersCollection)
-  res.send(result)
+  try {
+    const result = await updateDoc(req, usersCollection)
+    res.send(result)
+  } catch (err) {
+    console.log(err)
+  }
 }
 
 const getUserRole = async (req, res) => {
-  const user = await usersCollection().findOne({ email: req.query?.email })
-  const role = user.role || "user"
-  const adminType = user.adminType || ""
-  res.send({ role, adminType })
+  try {
+    const user = await usersCollection().findOne({ email: req.query?.email })
+    const role = user.role || "user"
+    const adminType = user.adminType || ""
+    res.send({ role, adminType })
+  } catch (err) {
+    console.log(err)
+  }
 }
 
 const getOneUser = async (req, res) => {
@@ -44,24 +56,28 @@ const getOneUser = async (req, res) => {
 }
 
 const getPremiumUsers = async (req, res) => {
-  const users = await premiumCollection().aggregate([
-    { "$addFields": { "id": { "$toObjectId": "$userId" } } },
-    {
-      "$lookup": {
-        "from": "users",
-        "localField": "id",
-        "foreignField": "_id",
-        "as": "user"
+  try {
+    const users = await premiumCollection().aggregate([
+      { "$addFields": { "id": { "$toObjectId": "$userId" } } },
+      {
+        "$lookup": {
+          "from": "users",
+          "localField": "id",
+          "foreignField": "_id",
+          "as": "user"
+        }
+      },
+      {
+        $sort: { "products.purchasingTime": -1 }
+      },
+      {
+        $unwind: "$user"
       }
-    },
-    {
-      $sort: { "products.purchasingTime": -1 }
-    },
-    {
-      $unwind: "$user"
-    }
-  ]).toArray()
-  res.send(users)
+    ]).toArray()
+    res.send(users)
+  } catch (err) {
+    console.log(err)
+  }
 }
 
 

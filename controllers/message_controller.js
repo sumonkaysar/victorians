@@ -4,12 +4,16 @@ const { ObjectId } = require("mongodb");
 const { uploadFile } = require("../utils/uploadFile");
 
 const saveMessage = async (req, res) => {
-  req.body = JSON.parse(req.body.messageData);
-  if (req.file?.filename) {
-    req.body.message.videoOrImg = uploadFile(req.file.filename);
+  try {
+    req.body = JSON.parse(req.body.messageData);
+    if (req.file?.filename) {
+      req.body.message.videoOrImg = uploadFile(req.file.filename);
+    }
+    const result = await createDoc(req, userMessage);
+    res.send(result);
+  } catch (err) {
+    console.log(err)
   }
-  const result = await createDoc(req, userMessage);
-  res.send(result);
 };
 
 const getMessage = async (req, res) => {
@@ -47,20 +51,24 @@ const getMessage = async (req, res) => {
 };
 
 const getLatestUsers = async (req, res) => {
-  const users = await userMessage()
-    .aggregate([
-      {
-        $group: {
-          _id: {
-            authorId: "$authorId",
+  try {
+    const users = await userMessage()
+      .aggregate([
+        {
+          $group: {
+            _id: {
+              authorId: "$authorId",
+            },
+            timestamp: { $last: "$timestamp" },
           },
-          timestamp: { $last: "$timestamp" },
         },
-      },
-      { $project: { _id: 1, authorId: 1, timestamp: 1 } },
-    ])
-    .toArray();
+        { $project: { _id: 1, authorId: 1, timestamp: 1 } },
+      ])
+      .toArray();
     res.send(users)
+  } catch (err) {
+    console.log(err)
+  }
 };
 
 module.exports = {
