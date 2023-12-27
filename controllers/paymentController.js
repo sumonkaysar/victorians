@@ -7,6 +7,7 @@ const store_id = process.env.STORE_ID
 const signature_key = process.env.SIGNATURE_KEY
 const server = process.env.SERVER
 const client = process.env.CLIENT
+let productNames = ""
 
 const makeProductsPayment = async (req, res) => {
   try {
@@ -117,6 +118,7 @@ const makePayment = async (req, res, totalPrice, names) => {
         errorMessage,
       });
     }
+    productNames = names
     res.status(200).send({ payment_url: data.payment_url });
   } catch (err) {
     console.log(err)
@@ -174,16 +176,16 @@ const paymentSuccess = async (req, res) => {
     if (!result5) {
       return res.status(400).json({ error: 'Something went wrong' })
     }
-    res.redirect(`${client}/payment?status=success`)
+    res.redirect(`${client}?paymentStatus=success&products=${productNames}`)
   } catch (err) {
     console.log(err)
-    res.redirect(`${client}/payment?status=error`)
+    res.redirect(`${client}?paymentStatus=error`)
   }
 }
 
 const paymentFailure = async (req, res) => {
   try {
-    res.redirect(`${client}/payment?status=failure`)
+    res.redirect(`${client}?paymentStatus=failure`)
   } catch (err) {
     console.log(err)
   }
@@ -191,7 +193,7 @@ const paymentFailure = async (req, res) => {
 
 const paymentCancel = async (req, res) => {
   try {
-    res.redirect(`${client}/payment?status=cancelled`)
+    res.redirect(`${client}?paymentStatus=cancelled`)
   } catch (err) {
     console.log(err)
   }
