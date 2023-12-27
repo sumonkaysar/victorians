@@ -42,7 +42,7 @@ const getMyCartProducts = async (req, res) => {
         const { userId } = req.query
         const myCart = await cartCollection().findOne({ userId })
         if (!myCart?.products?.length > 0) {
-            return res.send([])
+            return res.send({})
         }
         const { products } = myCart
         const cartProducts = await productsCollection().aggregate([
