@@ -14,6 +14,8 @@ const getAllProducts = async (req, res) => {
 const saveProduct = async (req, res) => {
     try {
         req.body.adImg = uploadFile(req.file.filename)
+        req.body.expireAt = new Date(Date.now() + Number(req.body.expireAt))
+        const index = await advertisedProductsCollection().createIndex({ "expireAt": 1 }, { expireAfterSeconds: 0 })
         const result = await createDoc(req, advertisedProductsCollection)
         res.send(result)
     } catch (err) {
