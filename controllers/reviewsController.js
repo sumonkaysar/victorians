@@ -29,19 +29,27 @@ const updateReview = async (req, res) => {
         }
         const { productId, ratings } = await reviewsCollection().findOne({ _id: new ObjectId(req.params.id) })
         const productsUpdated = await productsCollection().updateOne({ _id: new ObjectId(productId) },
-            { $inc: { totalRatings: ratings } },
+            { $inc: { totalRatings: ratings, totalRatedUser: 1 } },
             { upsert: true }
         )
         res.send(productsUpdated)
     } catch (err) {
-        console.log(err);
+        console.log(err)
     }
 }
 
 const deleteReview = async (req, res) => {
     try {
+        const { productId, ratings } = await reviewsCollection().findOne({ _id: new ObjectId(req.params.id) })
         const result = await deleteDoc(req, reviewsCollection)
-        res.send(result)
+        if (!result) {
+            return;
+        }
+        const productsUpdated = await productsCollection().updateOne({ _id: new ObjectId(productId) },
+            { $inc: { totalRatings: ratings * (-1), totalRatedUser: -1 } },
+            { upsert: true }
+        )
+        res.send(productsUpdated)
     } catch (err) {
         console.log(err)
     }
