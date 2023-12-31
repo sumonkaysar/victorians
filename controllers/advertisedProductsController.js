@@ -1,9 +1,10 @@
-const { productsCollection } = require("../mongoDBConfig/collections")
+const { advertisedProductsCollection } = require("../mongoDBConfig/collections")
 const { readDoc, createDoc, updateDoc, deleteDoc, readOneDoc } = require("../utils/mongoQueries")
+const { uploadFile } = require("../utils/uploadFile")
 
 const getAllProducts = async (req, res) => {
     try {
-        const products = await readDoc(productsCollection)
+        const products = await readDoc(advertisedProductsCollection)
         res.send(products)
     } catch (err) {
         console.log(err)
@@ -12,7 +13,8 @@ const getAllProducts = async (req, res) => {
 
 const saveProduct = async (req, res) => {
     try {
-        const result = await createDoc(req, productsCollection)
+        req.body.adImg = uploadFile(req.file.filename)
+        const result = await createDoc(req, advertisedProductsCollection)
         res.send(result)
     } catch (err) {
         console.log(err)
@@ -21,7 +23,7 @@ const saveProduct = async (req, res) => {
 
 const updateProduct = async (req, res) => {
     try {
-        const result = await updateDoc(req, productsCollection)
+        const result = await updateDoc(req, advertisedProductsCollection)
         res.send(result)
     } catch (err) {
         console.log(err)
@@ -30,7 +32,7 @@ const updateProduct = async (req, res) => {
 
 const deleteProduct = async (req, res) => {
     try {
-        const result = await deleteDoc(req, productsCollection)
+        const result = await deleteDoc(req, advertisedProductsCollection)
         res.send(result)
     } catch (err) {
         console.log(err)
@@ -39,7 +41,7 @@ const deleteProduct = async (req, res) => {
 
 const getOneProduct = async (req, res) => {
     try {
-        const result = await readOneDoc(req, productsCollection)
+        const result = await readOneDoc(req, advertisedProductsCollection)
         res.send(result || {})
     } catch (err) {
         console.log(err)
