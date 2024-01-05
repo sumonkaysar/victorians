@@ -99,9 +99,6 @@ const makePayment = async (req, res, totalPrice, names) => {
       cus_email: user.email,
       cus_phone: user.mobile || "+8801700000000",
       cus_add1: user.location,
-      // cus_add2: "Dhaka",
-      // cus_city: "Dhaka",
-      // cus_country: "Bangladesh",
       success_url: `${server}/payment/success`,
       fail_url: `${server}/payment/failure`,
       cancel_url: `${server}/payment/cancel`,
@@ -169,7 +166,6 @@ const paymentSuccess = async (req, res) => {
       productsIds: products.map(product => product.productId),
       type: "purchased",
       seen: false,
-      read: false,
       time: purchasingTime,
       expireAt: new Date(Date.now() + 30 * 86400000) // remain for 30 days
     })

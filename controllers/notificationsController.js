@@ -13,8 +13,23 @@ const getAllNotifications = async (req, res) => {
 
 const saveNotification = async (req, res) => {
     try {
-        const result = await createDoc(req, notificationsCollection)
-        res.send(result)
+        const {userId, message} = req.body
+        const index = await notificationsCollection().createIndex({ "expireAt": 1 }, { expireAfterSeconds: 0 })
+        if (!index) {
+            return res.status(400).json({ error: 'Something went wrong' })
+        }
+        const result = await notificationsCollection().insertOne({
+            userId,
+            message,
+            type: "adminNotice",
+            seen: false,
+            time: Date.now(),
+            expireAt: new Date(Date.now() + 30 * 86400000) // remain for 30 days
+        })
+        if (!result) {
+            return res.status(400).json({ error: 'Something went wrong' })
+        }
+        res.status(200).json({ status: 200, message: 'Notification sent successfully' })
     } catch (err) {
         console.log(err)
     }
