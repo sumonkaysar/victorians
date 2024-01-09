@@ -135,6 +135,40 @@ const getAllProductsNamesByProductIds = async (req, res) => {
     }
 }
 
+const getProductsByProductIdAndPackageId = async (req, res) => {
+    try {
+        const selectedProducts = req.body
+        const products = await productsCollection().aggregate([
+            {
+                $match: {
+                    $or: selectedProducts.map(product => ({ "_id": new ObjectId(product.productId) }))
+                }
+            },
+            {
+                $project: {
+                    _id: 1,
+                    sof_name: 1,
+                    startPrice: 1,
+                    endPrice: 1,
+                    description: 1,
+                    packages: {
+                        $filter: {
+                            input: "$packages",
+                            as: "package",
+                            cond: { $or: selectedProducts.map(product => ({ $eq: ["$$package.id", product.packageId] })) }
+                        }
+                    },
+                    img: 1,
+                    popular: 1,
+                }
+            }
+        ]).toArray()
+        res.send(products)
+    } catch (err) {
+        console.log(err)
+    }
+}
+
 module.exports = {
     getAllProducts,
     saveProduct,
@@ -148,4 +182,5 @@ module.exports = {
     getCategoryProducts,
     getMyPaidProducts,
     getAllProductsNamesByProductIds,
+    getProductsByProductIdAndPackageId,
 }

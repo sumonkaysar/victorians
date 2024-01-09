@@ -1,9 +1,10 @@
 const { makeAdmin, removeAdmin } = require("../controllers/adminController")
+const { verifyOwner } = require("../middlewares/verifyJWT")
 
 const adminRouter = require("express").Router()
 
-adminRouter.post("/make", makeAdmin)
+adminRouter.post("/make", verifyOwner, makeAdmin)
 
-adminRouter.post("/remove", removeAdmin)
+adminRouter.post("/remove", verifyOwner, removeAdmin)
 
 module.exports = adminRouter

@@ -1,5 +1,5 @@
 const { ObjectId } = require("mongodb")
-const { notificationsCollection, premiumCollection } = require("../mongoDBConfig/collections")
+const { notificationsCollection, premiumCollection, usersCollection } = require("../mongoDBConfig/collections")
 const { readDoc, createDoc, updateDoc, deleteDoc, readOneDoc } = require("../utils/mongoQueries")
 
 const getAllNotifications = async (req, res) => {
@@ -29,7 +29,11 @@ const saveNotification = async (req, res) => {
         if (!result) {
             return res.status(400).json({ error: 'Something went wrong' })
         }
-        res.status(200).json({ status: 200, message: 'Notification sent successfully' })
+        const user = await usersCollection().findOne({_id: new ObjectId(userId)})
+        if (!user) {
+            return res.status(400).json({ error: 'Something went wrong' })
+        }
+        res.status(200).json({ status: 200, message: 'Notification sent successfully', user })
     } catch (err) {
         console.log(err)
     }

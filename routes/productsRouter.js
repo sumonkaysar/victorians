@@ -1,5 +1,6 @@
 const { getCartPackage } = require("../controllers/cartController")
-const { getAllProducts, saveProduct, updateProduct, deleteProduct, getOneProduct, getPopularProducts, makeProductPopular, getPackageProducts, searchProducts, getCategoryProducts, getMyPaidProducts, getAllProductsNamesByProductIds } = require("../controllers/productsController")
+const { getAllProducts, saveProduct, updateProduct, deleteProduct, getOneProduct, getPopularProducts, makeProductPopular, getPackageProducts, searchProducts, getCategoryProducts, getMyPaidProducts, getAllProductsNamesByProductIds, getProductsByProductIdAndPackageId } = require("../controllers/productsController")
+
 const { upload } = require("../utils/uploadFile")
 
 const productsRouter = require("express").Router()
@@ -29,5 +30,7 @@ productsRouter.patch("/:id", upload.single('img'), updateProduct)
 productsRouter.delete("/:id", deleteProduct)
 
 productsRouter.get("/:id", getOneProduct)
+
+productsRouter.post("/packageIds", getProductsByProductIdAndPackageId)
 
 module.exports = productsRouter
