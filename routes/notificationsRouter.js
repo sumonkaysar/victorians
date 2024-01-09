@@ -4,6 +4,8 @@ const notificationRouter = require("express").Router()
 
 notificationRouter.get("/", getAllNotifications)
 
+notificationRouter.post("/", saveNotification)
+
 notificationRouter.get("/user/:userId", getUserNotifications)
 
 notificationRouter.post("/seen/make", makeNotificationSeen)

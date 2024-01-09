@@ -19,11 +19,6 @@ const getAllPurchases = async (req, res) => {
     }
 }
 
-const saveNotification = async (req, res) => {
-    const purchases = await readDoc(notificationsCollection)
-    res.send(purchases)
-}
-
 module.exports = {
     getAllPurchases,
 }
