@@ -3,7 +3,6 @@ const { createDoc, updateDoc, deleteDoc } = require("../utils/mongoQueries")
 
 const getAllCoupons = async (req, res) => {
     try {
-        console.log(req.headers.authorization);
         const couponInfo = await productsCollection().aggregate([
             { "$addFields": { "productId": { "$toString": "$_id" } } },
             {
