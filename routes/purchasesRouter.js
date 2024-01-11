@@ -1,4 +1,4 @@
-const { getAllPurchases, getAllPurchasesByYear, getPurchasesByName } = require("../controllers/purchasesController")
+const { getAllPurchases, getAllPurchasesByYear, getPurchasesByName, getPremiumUsers } = require("../controllers/purchasesController")
 
 const purchasesRouter = require("express").Router()
 
@@ -8,6 +8,6 @@ purchasesRouter.get("/year", getAllPurchasesByYear)
 
 purchasesRouter.get("/search", getPurchasesByName)
 
-purchasesRouter.get("/users", getPurchasesByName)
+purchasesRouter.get("/users", getPremiumUsers)
 
 module.exports = purchasesRouter
