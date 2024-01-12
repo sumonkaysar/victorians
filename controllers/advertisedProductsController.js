@@ -1,6 +1,8 @@
+const { ObjectId } = require("mongodb")
 const { advertisedProductsCollection } = require("../mongoDBConfig/collections")
 const { readDoc, createDoc, updateDoc, deleteDoc, readOneDoc } = require("../utils/mongoQueries")
 const { uploadFile } = require("../utils/uploadFile")
+const { deleteFiles } = require("../utils/fileReadAndDelete")
 
 const getAllProducts = async (req, res) => {
     try {
@@ -14,8 +16,6 @@ const getAllProducts = async (req, res) => {
 const saveProduct = async (req, res) => {
     try {
         req.body.adImg = uploadFile(req.file.filename)
-        // req.body.expireAt = new Date(Date.now() + Number(req.body.expireAt))
-        // const index = await advertisedProductsCollection().createIndex({ "expireAt": 1 }, { expireAfterSeconds: 0 })
         if (req.body.selectedProducts) {
             req.body.selectedProducts = JSON.parse(req.body.selectedProducts)
         }
@@ -28,6 +28,12 @@ const saveProduct = async (req, res) => {
 
 const updateProduct = async (req, res) => {
     try {
+        if (req.file?.filename) {
+            req.body.adImg = uploadFile(req.file.filename)
+        }
+        if (req.body.selectedProducts) {
+            req.body.selectedProducts = JSON.parse(req.body.selectedProducts)
+        }
         const result = await updateDoc(req, advertisedProductsCollection)
         res.send(result)
     } catch (err) {
@@ -37,6 +43,8 @@ const updateProduct = async (req, res) => {
 
 const deleteProduct = async (req, res) => {
     try {
+        const ad = await advertisedProductsCollection().findOne({ _id: new ObjectId(req.params.id) })
+        deleteFiles(ad.adImg.split("files/")[1])
         const result = await deleteDoc(req, advertisedProductsCollection)
         res.send(result)
     } catch (err) {

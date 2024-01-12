@@ -1,10 +1,30 @@
-const { couponsCollection } = require("../mongoDBConfig/collections")
-const { readDoc, createDoc, updateDoc, deleteDoc } = require("../utils/mongoQueries")
+const { couponsCollection, productsCollection } = require("../mongoDBConfig/collections")
+const { createDoc, updateDoc, deleteDoc } = require("../utils/mongoQueries")
 
 const getAllCoupons = async (req, res) => {
     try {
-        const products = await readDoc(couponsCollection)
-        res.send(products)
+        const couponInfo = await productsCollection().aggregate([
+            { "$addFields": { "productId": { "$toString": "$_id" } } },
+            {
+                "$lookup": {
+                    "from": "coupons",
+                    "localField": "productId",
+                    "foreignField": "productId",
+                    "as": "couponInfo"
+                }
+            },
+            {
+                "$project": {
+                    "sof_name": 1,
+                    "couponInfo": 1
+                }
+            }
+        ]).toArray()
+        const coupons = couponInfo.map(coupon=> {
+            coupon.couponInfo.forEach(singleInfo => singleInfo.sof_name=coupon.sof_name)
+            return coupon.couponInfo
+        })
+        res.send(coupons.flat(1) || [])
     } catch (err) {
         console.log(err)
     }
@@ -21,7 +41,10 @@ const createCoupon = async (req, res) => {
 
 const updateCoupon = async (req, res) => {
     try {
-        const result = await updateDoc(req, couponsCollection)
+        const {productId, type} = req.params
+        const result = await couponsCollection().updateOne({productId, type},{
+            $set: req.body
+        })
         res.send(result)
     } catch (err) {
         console.log(err)
