@@ -65,7 +65,7 @@ const getAllPurchasesByYear = async (req, res) => {
     }
 }
 
-const getPurchasesByName = async (req, res) => {
+const getPurchasesByEmail = async (req, res) => {
     try {
         const { email } = req.query
         if (email) {
@@ -107,7 +107,44 @@ const getPurchasesByName = async (req, res) => {
 
 const getPremiumUsers = async (req, res) => {
     try {
-        const purchases = await purchasesCollection().find({}).sort({ purchasingTime: -1 }).toArray()
+        const purchases = await purchasesCollection().aggregate([
+            { "$addFields": { "id": { "$toObjectId": "$userId" } } },
+            {
+                "$lookup": {
+                    "from": "users",
+                    "localField": "id",
+                    "foreignField": "_id",
+                    "as": "user"
+                }
+            },
+            {
+                $project: {
+                    user: {
+                        firstName: 1,
+                        lastName: 1,
+                        location: 1,
+                        email: 1,
+                        avatar: 1,
+
+                    },
+                    purchasingTime: 1,
+                    products: 1,
+                    userId: 1,
+                    paymentData: {
+                        amount: 1,
+                        card_type: 1,
+                    },
+                    purchasingTime: 1,
+                    bundleId: 1,
+                }
+            },
+            {
+                $sort: { "purchasingTime": -1 }
+            },
+            {
+                $unwind: "$user"
+            }
+        ]).toArray()
         const dailyPurchases = {};
         purchases.forEach(item => {
             const purchaseDate = new Date(item.purchasingTime);
@@ -123,9 +160,49 @@ const getPremiumUsers = async (req, res) => {
     }
 }
 
+const getPremiumUsersByEmail = async (req, res) => {
+    try {
+        const { email } = req.query
+        if (email) {
+            const user = await usersCollection().findOne({ email: { '$regex': email, '$options': 'i' } })
+            if (!user?._id) {
+                return res.send([])
+            }
+            const purchases = await purchasesCollection().aggregate([
+                { $match: { userId: user._id + "" } },
+                {
+                    $project: {
+                        user: {
+                            firstName: user.firstName,
+                            lastName: user.lastName,
+                            location: user.location,
+                            email: user.email,
+                            avatar: user.avatar,
+                        },
+                        purchasingTime: 1,
+                        products: 1,
+                        userId: 1,
+                        paymentData: {
+                            amount: 1,
+                            card_type: 1,
+                        },
+                        purchasingTime: 1,
+                        bundleId: 1,
+                    }
+                },
+                { $sort: { purchasingTime: -1 } }
+            ]).toArray()
+            res.send(purchases)
+        }
+    } catch (err) {
+        console.log(err)
+    }
+}
+
 module.exports = {
     getAllPurchases,
     getAllPurchasesByYear,
-    getPurchasesByName,
+    getPurchasesByEmail,
     getPremiumUsers,
+    getPremiumUsersByEmail,
 }

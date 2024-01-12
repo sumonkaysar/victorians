@@ -8,7 +8,7 @@ advertisedProductsRouter.get("/", getAllProducts)
 
 advertisedProductsRouter.post("/", verifyAdmin, upload.single('adImg'), saveProduct)
 
-advertisedProductsRouter.patch("/:id", verifyAdmin, updateProduct)
+advertisedProductsRouter.patch("/:id", verifyAdmin, upload.single('adImg'), updateProduct)
 
 advertisedProductsRouter.delete("/:id", verifyAdmin, deleteProduct)
 
