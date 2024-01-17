@@ -1,4 +1,4 @@
-const { purchasesCollection, usersCollection } = require("../mongoDBConfig/collections")
+const { purchasesCollection, usersCollection, premiumCollection } = require("../mongoDBConfig/collections")
 
 const getPurchases = async (res, purchases) => {
     try {
@@ -107,54 +107,48 @@ const getPurchasesByEmail = async (req, res) => {
 
 const getPremiumUsers = async (req, res) => {
     try {
-        const purchases = await purchasesCollection().aggregate([
+        const users = await premiumCollection().aggregate([
             { "$addFields": { "id": { "$toObjectId": "$userId" } } },
             {
                 "$lookup": {
                     "from": "users",
                     "localField": "id",
                     "foreignField": "_id",
-                    "as": "user"
+                    "as": "userInfo"
                 }
             },
             {
                 $project: {
-                    user: {
+                    userInfo: {
+                        _id: 1,
                         firstName: 1,
                         lastName: 1,
                         location: 1,
                         email: 1,
                         avatar: 1,
+                        role: 1,
+                        occupation: 1,
 
                     },
-                    purchasingTime: 1,
-                    products: 1,
-                    userId: 1,
-                    paymentData: {
-                        amount: 1,
-                        card_type: 1,
-                    },
-                    purchasingTime: 1,
-                    bundleId: 1,
                 }
             },
             {
-                $sort: { "purchasingTime": -1 }
+                $sort: { "_id": -1 }
             },
             {
-                $unwind: "$user"
+                $unwind: "$userInfo"
             }
         ]).toArray()
-        const dailyPurchases = {};
-        purchases.forEach(item => {
-            const purchaseDate = new Date(item.purchasingTime);
-            const time = `${purchaseDate.getFullYear()}-${purchaseDate.getMonth() + 1}-${purchaseDate.getDate()}`;
-            if (!dailyPurchases[time]) {
-                dailyPurchases[time] = [];
-            }
-            dailyPurchases[time].push(item);
-        });
-        res.send(dailyPurchases)
+        // const dailyPurchases = {};
+        // purchases.forEach(item => {
+        //     const purchaseDate = new Date(item.purchasingTime);
+        //     const time = `${purchaseDate.getFullYear()}-${purchaseDate.getMonth() + 1}-${purchaseDate.getDate()}`;
+        //     if (!dailyPurchases[time]) {
+        //         dailyPurchases[time] = [];
+        //     }
+        //     dailyPurchases[time].push(item);
+        // });
+        res.send(users)
     } catch (err) {
         console.log(err)
     }
@@ -199,10 +193,44 @@ const getPremiumUsersByEmail = async (req, res) => {
     }
 }
 
+const getPremiumUserProducts = async (req, res) => {
+    try {
+        const { userId } = req.params
+        if (userId) {
+            const premiumUser = await premiumCollection().findOne({ userId })
+            res.send(premiumUser || {})
+        }
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+const updatePremiumUserProduct = async (req, res) => {
+    try {
+        const { userId, productId } = req.params
+        if (userId) {
+            const premiumUser = await premiumCollection().updateOne(
+                { userId, 'products.productId': productId },
+                {
+                    $set: {
+                        'products.$.access': req.body.access,
+                        'products.$.accessTime': req.body.time
+                    }
+                },
+            )
+            res.send(premiumUser || {})
+        }
+    } catch (err) {
+        console.log(err)
+    }
+}
+
 module.exports = {
     getAllPurchases,
     getAllPurchasesByYear,
     getPurchasesByEmail,
     getPremiumUsers,
     getPremiumUsersByEmail,
+    getPremiumUserProducts,
+    updatePremiumUserProduct,
 }
