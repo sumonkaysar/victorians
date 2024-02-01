@@ -1,5 +1,5 @@
 const { ObjectId } = require("mongodb")
-const { reviewsCollection, productsCollection } = require("../mongoDBConfig/collections")
+const { reviewsCollection, productsCollection, reviewRepliesCollection } = require("../mongoDBConfig/collections")
 const { readDoc, createDoc, updateDoc, deleteDoc } = require("../utils/mongoQueries")
 
 const getAllReviewsOfProduct = async (req, res) => {
@@ -75,6 +75,25 @@ const getSingleProductReviews = async (req, res) => {
     }
 }
 
+const makeReviewReply = async (req, res) => {
+    try {
+        const result = await createDoc(req, reviewRepliesCollection)
+        res.send(result)
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+const getReviewReplies = async (req, res) => {
+    try {
+        const { commentId } = req.params
+        const replies = await reviewRepliesCollection().find({ commentId }).toArray()
+        res.send(replies)
+    } catch (err) {
+        console.log(err)
+    }
+}
+
 
 module.exports = {
     getAllReviewsOfProduct,
@@ -83,4 +102,6 @@ module.exports = {
     deleteReview,
     getOneReview,
     getSingleProductReviews,
+    makeReviewReply,
+    getReviewReplies,
 }

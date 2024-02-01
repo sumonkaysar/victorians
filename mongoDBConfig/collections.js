@@ -16,6 +16,7 @@ const couponsCollection = () => client().db(DB).collection("coupons")
 const pendingPaymentsCollection = () => client().db(DB).collection("pendingPayments")
 const premiumCollection = () => client().db(DB).collection("premium")
 const packagesCollection = () => client().db(DB).collection("packages")
+const reviewRepliesCollection = () => client().db(DB).collection("reviewReplies")
 
 module.exports = {
     productsCollection,
@@ -32,4 +33,5 @@ module.exports = {
     pendingPaymentsCollection,
     premiumCollection,
     packagesCollection,
+    reviewRepliesCollection,
 }

@@ -173,37 +173,48 @@ const getPremiumUsers = async (req, res) => {
 
 const getPremiumUsersByEmail = async (req, res) => {
     try {
-        const { email } = req.query
-        if (email) {
-            const user = await usersCollection().findOne({ email: { '$regex': email, '$options': 'i' } })
-            if (!user?._id) {
-                return res.send([])
-            }
-            const purchases = await purchasesCollection().aggregate([
-                { $match: { userId: user._id + "" } },
+        const { text } = req.query
+        if (text) {
+            const users = await usersCollection().aggregate([
+                {
+                    $match: {
+                        $or: [
+                            { firstName: { '$regex': text, '$options': 'i' } },
+                            { lastName: { '$regex': text, '$options': 'i' } },
+                            { email: { '$regex': text, '$options': 'i' } }
+                        ]
+                    }
+                },
+                { "$addFields": { "userId": { "$toString": "$_id" } } },
+                {
+                    "$lookup": {
+                        "from": "purchases",
+                        "localField": "userId",
+                        "foreignField": "userId",
+                        "as": "purchaseInfo"
+                    }
+                },
                 {
                     $project: {
-                        user: {
-                            firstName: user.firstName,
-                            lastName: user.lastName,
-                            location: user.location,
-                            email: user.email,
-                            avatar: user.avatar,
-                        },
+                        firstName: 1,
+                        lastName: 1,
+                        location: 1,
+                        email: 1,
+                        occupation: 1,
+                        avatar: 1,
                         purchasingTime: 1,
                         products: 1,
                         userId: 1,
-                        paymentData: {
-                            amount: 1,
-                            card_type: 1,
-                        },
-                        purchasingTime: 1,
-                        bundleId: 1,
+                    }
+                },
+                {
+                    $match: {
+                        purchaseInfo: { $ne: [] }
                     }
                 },
                 { $sort: { purchasingTime: -1 } }
             ]).toArray()
-            res.send(purchases)
+            res.send(users)
         }
     } catch (err) {
         console.log(err)
