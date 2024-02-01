@@ -1,5 +1,6 @@
 const { usersCollection, premiumCollection } = require("../mongoDBConfig/collections")
 const { readDoc, updateDoc } = require("../utils/mongoQueries")
+const jwt = require("jsonwebtoken")
 // const { deleteFiles } = require("../utils/fileReadAndDelete")
 const { ObjectId } = require('mongodb');
 
