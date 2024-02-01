@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
-const jwt = require("jsonwebtoken")
-const { usersCollection, passwordsCollection } = require("../mongoDBConfig/collections")
+const jwt = require("jsonwebtoken");
+const { usersCollection, passwordsCollection } = require("../mongoDBConfig/collections");
 const { createDoc } = require("../utils/mongoQueries")
 const { uploadFile } = require("../utils/uploadFile");
 const { deleteFiles } = require('../utils/fileReadAndDelete');

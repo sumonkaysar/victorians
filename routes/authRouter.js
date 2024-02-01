@@ -2,7 +2,7 @@ const { signup, login, forgotPassword, changePassword, isLoggedIn } = require(".
 const {  verifyUser } = require("../middlewares/verifyJWT")
 const { upload } = require("../utils/uploadFile")
 
-const authRouter = require("express").Router()
+const authRouter = require("express").Router();
 
 authRouter.post("/signup", upload.single('avatar'), signup)
 
