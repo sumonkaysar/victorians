@@ -4,6 +4,7 @@ const { usersCollection, passwordsCollection } = require("../mongoDBConfig/colle
 const { createDoc } = require("../utils/mongoQueries")
 const { uploadFile } = require("../utils/uploadFile");
 const { deleteFiles } = require('../utils/fileReadAndDelete');
+const { generateOTP } = require('../utils/OTP');
 
 const signup = async (req, res) => {
     try {
@@ -15,9 +16,11 @@ const signup = async (req, res) => {
             const hash = await bcrypt.hash(password, 10);
             const result = await passwordsCollection().insertOne({ hash, email })
             if (result) {
+                req.body.otp = generateOTP()
+                req.body.otpCreatedTime = new Date().getTime();
                 const result2 = await createDoc(req, usersCollection)
                 if (result2) {
-                    return res.send({ creation: result2 })
+                    return res.send({ creation: result2, otp: req.body.otp })
                 }
                 return res.status(500).send({ message: "Account could not be created" })
             }
@@ -85,6 +88,37 @@ const forgotPassword = async (req, res) => {
     res.send({})
 }
 
+const verifyEmail = async (req, res) => {
+    const { email, otp } = req.body
+    const user = await usersCollection().findOne({ email })
+    if (user.otp === otp) {
+        if ((new Date().getTime() - user.otpCreatedTime) < 3600000) {
+            const token = jwt.sign({ user: { email } }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '7d' })
+            const result = await usersCollection().updateOne({ email }, { $set: { isVerified: true } })
+            res.send({result, user, token})
+        } else {
+            res.send({ error: "expired-otp" })
+        }
+    } else {
+        res.send({ error: "wrong-otp" })
+    }
+}
+
+const newOTP = async (req, res) => {
+    const { email } = req.body
+    const otp = generateOTP()
+    const otpCreatedTime = new Date().getTime()
+    const result = await usersCollection().updateOne({ email }, {
+        $set: {
+            otp,
+            otpCreatedTime
+        }
+    })
+    if (result) {
+        res.send({ otp })
+    }
+}
+
 const isLoggedIn = async (req, res) => {
     try {
         const { email } = req.decoded.user
@@ -101,4 +135,6 @@ module.exports = {
     changePassword,
     forgotPassword,
     isLoggedIn,
+    verifyEmail,
+    newOTP,
 }

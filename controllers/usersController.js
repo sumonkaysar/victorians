@@ -1,6 +1,5 @@
 const { usersCollection, premiumCollection } = require("../mongoDBConfig/collections")
 const { readDoc, updateDoc } = require("../utils/mongoQueries")
-// const { uploadFile } = require("../utils/uploadFile")
 // const { deleteFiles } = require("../utils/fileReadAndDelete")
 const { ObjectId } = require('mongodb');
 
@@ -14,6 +13,15 @@ const getUsers = async (req, res) => {
 }
 
 const updateUser = async (req, res) => {
+  try {
+    const result = await updateDoc(req, usersCollection)
+    res.send(result)
+  } catch (err) {
+    console.log(err)
+  }
+}
+
+const updateOwner = async (req, res) => {
   try {
     const result = await updateDoc(req, usersCollection)
     res.send(result)
@@ -87,4 +95,5 @@ module.exports = {
   getUserRole,
   getOneUser,
   getPremiumUsers,
+  updateOwner,
 }
