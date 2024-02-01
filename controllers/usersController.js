@@ -25,6 +25,7 @@ const updateUser = async (req, res) => {
 const updateOwner = async (req, res) => {
   try {
     const result = await updateDoc(req, usersCollection)
+    const {email} = req.body
     const token = jwt.sign({ user: { email } }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '7d' })
     result.token = token
     res.send(result)
