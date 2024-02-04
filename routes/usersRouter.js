@@ -1,4 +1,5 @@
-const { getUsers, getOneUser, getUserRole, getPremiumUsers } = require("../controllers/usersController")
+const { getUsers, getOneUser, getUserRole, getPremiumUsers, updateUser, updateOwner } = require("../controllers/usersController")
+const { verifyOwner } = require("../middlewares/verifyJWT")
 // const { upload } = require("../utils/uploadFile")
 
 const usersRouter = require("express").Router()
@@ -13,7 +14,9 @@ usersRouter.get("/:id", getOneUser)
 
 // usersRouter.post("/", upload.single('avatar'), createUser)
 
-// usersRouter.patch("/:id", updateUser)
+usersRouter.patch("/owner/:id", verifyOwner, updateOwner)
+
+usersRouter.patch("/:id", updateUser)
 
 // usersRouter.delete("/:id", deleteUser)
 

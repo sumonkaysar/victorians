@@ -1,4 +1,4 @@
-const { getAllProducts, saveProduct, updateProduct, deleteProduct, getOneProduct } = require("../controllers/advertisedProductsController")
+const { getAllProducts, saveProduct, updateProduct, deleteProduct, makeAdPayment, paymentSuccess } = require("../controllers/advertisedProductsController")
 const { verifyAdmin } = require("../middlewares/verifyJWT")
 const { upload } = require("../utils/uploadFile")
 
@@ -8,10 +8,12 @@ advertisedProductsRouter.get("/", getAllProducts)
 
 advertisedProductsRouter.post("/", verifyAdmin, upload.single('adImg'), saveProduct)
 
-advertisedProductsRouter.patch("/:id", verifyAdmin, updateProduct)
+advertisedProductsRouter.patch("/:id", verifyAdmin, upload.single('adImg'), updateProduct)
 
 advertisedProductsRouter.delete("/:id", verifyAdmin, deleteProduct)
 
-// advertisedProductsRouter.get("/:id", getOneProduct)
+advertisedProductsRouter.post("/payment", makeAdPayment)
+
+advertisedProductsRouter.post("/payment/success", paymentSuccess)
 
 module.exports = advertisedProductsRouter

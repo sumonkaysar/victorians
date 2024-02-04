@@ -42,7 +42,7 @@ const updateProduct = async (req, res) => {
 const deleteProduct = async (req, res) => {
     try {
         const product = await productsCollection().findOne({ _id: new ObjectId(req.params.id) })
-        deleteFiles(product.image.split("files/")[1])
+        deleteFiles(product.img.split("files/")[1])
         const result = await deleteDoc(req, productsCollection)
         res.send(result)
     } catch (err) {

@@ -1,5 +1,6 @@
 const { getCartPackage } = require("../controllers/cartController")
 const { getAllProducts, saveProduct, updateProduct, deleteProduct, getOneProduct, getPopularProducts, makeProductPopular, getPackageProducts, searchProducts, getCategoryProducts, getMyPaidProducts, getAllProductsNamesByProductIds, getProductsByProductIdAndPackageId } = require("../controllers/productsController")
+const { verifyAdmin } = require("../middlewares/verifyJWT")
 
 const { upload } = require("../utils/uploadFile")
 
@@ -7,7 +8,7 @@ const productsRouter = require("express").Router()
 
 productsRouter.get("/popular", getPopularProducts)
 
-productsRouter.patch("/popular/:id", makeProductPopular)
+productsRouter.patch("/popular/:id", verifyAdmin, makeProductPopular)
 
 productsRouter.get("/package", getPackageProducts)
 
