@@ -205,6 +205,7 @@ const getPremiumUsersByEmail = async (req, res) => {
                         purchasingTime: 1,
                         products: 1,
                         userId: 1,
+                        purchaseInfo: 1,
                     }
                 },
                 {

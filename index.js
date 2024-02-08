@@ -42,7 +42,7 @@ const io = new Server(httpServer, {
     origin: "*",
   },
 });
-const chat = chatRoutes(io);;
+const chat = chatRoutes(io);
 
 try {
 

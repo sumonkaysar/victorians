@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
-const jwt = require("jsonwebtoken")
-const { usersCollection, passwordsCollection } = require("../mongoDBConfig/collections")
+const jwt = require("jsonwebtoken");
+const { usersCollection, passwordsCollection } = require("../mongoDBConfig/collections");
 const { createDoc } = require("../utils/mongoQueries")
 const { uploadFile } = require("../utils/uploadFile");
 const { deleteFiles } = require('../utils/fileReadAndDelete');
@@ -91,7 +91,7 @@ const forgotPassword = async (req, res) => {
 const verifyEmail = async (req, res) => {
     const { email, otp } = req.body
     const user = await usersCollection().findOne({ email })
-    if (user.otp === otp) {
+    if (user?.otp === otp) {
         if ((new Date().getTime() - user.otpCreatedTime) < 3600000) {
             const token = jwt.sign({ user: { email } }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '7d' })
             const result = await usersCollection().updateOne({ email }, { $set: { isVerified: true } })
