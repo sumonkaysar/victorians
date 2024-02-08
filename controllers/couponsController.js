@@ -1,5 +1,5 @@
 const { couponsCollection, productsCollection } = require("../mongoDBConfig/collections")
-const { createDoc, updateDoc, deleteDoc } = require("../utils/mongoQueries")
+const { createDoc, deleteDoc } = require("../utils/mongoQueries")
 
 const getAllCoupons = async (req, res) => {
     try {
@@ -25,6 +25,19 @@ const getAllCoupons = async (req, res) => {
             return coupon.couponInfo
         })
         res.send(coupons.flat(1) || [])
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+const findCoupon = async (req, res) => {
+    try {
+        const {code, productId} = req.body
+        const coupon = await couponsCollection().findOne({productId})
+        if (coupon?.code === code) {
+            return res.send({discount: coupon.discount})
+        }
+        res.send({error: "Not a valid coupon"})
     } catch (err) {
         console.log(err)
     }
@@ -80,4 +93,5 @@ module.exports = {
     updateCoupon,
     deleteCoupon,
     matchCoupon,
+    findCoupon,
 }
