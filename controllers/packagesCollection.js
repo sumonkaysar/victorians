@@ -1,5 +1,5 @@
 const { packagesCollection } = require("../mongoDBConfig/collections")
-const { createDoc, readDoc, readOneDoc } = require("../utils/mongoQueries")
+const { createDoc, readDoc, readOneDoc, deleteDoc, updateDoc } = require("../utils/mongoQueries")
 const { uploadFile } = require("../utils/uploadFile")
 // const { deleteFiles } = require("../utils/fileReadAndDelete")
 
@@ -33,8 +33,29 @@ const getAPackage = async (req, res) => {
     }
 }
 
+const deleteAPackage = async (req, res) => {
+    try {
+        const result = await deleteDoc(req, packagesCollection)
+        res.send(result || {})
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+const updateAPackage = async (req, res) => {
+    try {
+        // console.log("...");
+        const result = await updateDoc(req, packagesCollection)
+        res.send(result || {})
+    } catch (err) {
+        console.log(err)
+    }
+}
+
 module.exports = {
     getAllPackages,
     savePackage,
     getAPackage,
+    deleteAPackage,
+    updateAPackage,
 }
