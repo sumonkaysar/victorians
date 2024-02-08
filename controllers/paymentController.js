@@ -37,7 +37,7 @@ const makeProductsPayment = async (req, res) => {
     const totalPrice = dbProducts.reduce((total, product) => {
       const price = product.packages[0] ? Number(product.packages[0].packagePrice) : 0
       const discount = products?.find(p => p.productId === (product._id + ""))?.discount || 0
-      total = total + price - (price * discount / 100)
+      total = total + price - Math.floor(price * discount / 100)
       return total
     }, 0)
     const names = dbProducts.map(product => product.sof_name).join(", ")
