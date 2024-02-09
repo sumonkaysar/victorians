@@ -1,6 +1,8 @@
 // controllers/chatController.js
 const path = require("path");
-
+const { usersCollection } = require("../mongoDBConfig/collections");
+const { ObjectId } = require("mongodb");
+const { messageWritingEvent } = require("./message_controller");
 const messageReciveSound = path.join(
   `${process.env.SERVER}/files/messageSound/Message_notification.mp3`
 );
@@ -51,13 +53,47 @@ const chatController = (io) => {
       io.emit("getUsers", activeUsers);
     });
 
-    socket.on("typingMessage", (data) => {
-      const user = findUser(data?.reseverId);
+    socket.on("typingMessage", async (data) => {
+      const message = data?.message;
+      const senderId = data?.senderId;
+      const user = findUser(senderId);
+      const user_id = new ObjectId(user?.user?._id) ;
+
+
       if (user !== undefined) {
-        socket.to(user.socketId).emit("typingMessageGet", data);
+        
+        user.typing = true;
+    
+        try {
+          // Set typing status set true
+         await usersCollection().updateOne(
+              { _id: user_id },
+              { $set: { typing: true } }
+          );
+
+          // Emit event user is typing
+          socket.to(user.socketId).emit("typingMessageGet", { ...data, typing: true });
+      
+          // Wait for 5 seconds
+          await new Promise(resolve => setTimeout(resolve, 5000));
+      
+          // Set typing status false after 30 seconds
+          await usersCollection().updateOne(
+              { _id: user_id },
+              { $set: { typing: false } }
+          );
+
+          // Emit event to stopped typing
+          socket.to(user.socketId).emit("typingMessageGet", { ...data, typing: false });
+      } catch (error) {
+          console.error("Error updating user typing status:", error);
+      }
       }
     });
+    
   });
+
+
 };
 
 module.exports = chatController;

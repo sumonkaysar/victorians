@@ -180,6 +180,9 @@ const getLatestUsers = async (req, res) => {
   }
 };
 
+
+
+
 module.exports = {
   saveMessage,
   getMessage,
@@ -187,5 +190,6 @@ module.exports = {
   readUnreadMessage,
   sortingUserWithMessage,
   messageSeenUnseenUser,
-  messageSeenUnseenAdmin
+  messageSeenUnseenAdmin,
+
 };
