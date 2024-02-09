@@ -20,8 +20,8 @@ const getAllCoupons = async (req, res) => {
                 }
             }
         ]).toArray()
-        const coupons = couponInfo.map(coupon=> {
-            coupon.couponInfo.forEach(singleInfo => singleInfo.sof_name=coupon.sof_name)
+        const coupons = couponInfo.map(coupon => {
+            coupon.couponInfo.forEach(singleInfo => singleInfo.sof_name = coupon.sof_name)
             return coupon.couponInfo
         })
         res.send(coupons.flat(1) || [])
@@ -32,12 +32,12 @@ const getAllCoupons = async (req, res) => {
 
 const findCoupon = async (req, res) => {
     try {
-        const {code, productId} = req.body
-        const coupon = await couponsCollection().findOne({productId})
+        const { code, productId } = req.body
+        const coupon = await couponsCollection().findOne({ productId })
         if (coupon?.code === code) {
-            return res.send({discount: coupon.discount})
+            return res.send({ discount: coupon.discount })
         }
-        res.send({error: "Not a valid coupon"})
+        res.send({ error: "Not a valid coupon" })
     } catch (err) {
         console.log(err)
     }
@@ -54,8 +54,8 @@ const createCoupon = async (req, res) => {
 
 const updateCoupon = async (req, res) => {
     try {
-        const {productId, type} = req.params
-        const result = await couponsCollection().updateOne({productId, type},{
+        const { productId, type } = req.params
+        const result = await couponsCollection().updateOne({ productId, type }, {
             $set: req.body
         })
         res.send(result)
@@ -86,6 +86,18 @@ const matchCoupon = async (req, res) => {
     }
 }
 
+const checkCoupon = async (req, res) => {
+    try {
+        const { productId } = req.params
+        const coupon = await couponsCollection().findOne({ productId })
+        if (coupon?.code) {
+            return res.send({ hascoupon: true })
+        }
+        res.send({ hascoupon: false })
+    } catch (err) {
+        console.log(err)
+    }
+}
 
 module.exports = {
     getAllCoupons,
@@ -94,4 +106,5 @@ module.exports = {
     deleteCoupon,
     matchCoupon,
     findCoupon,
+    checkCoupon,
 }
