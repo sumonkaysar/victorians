@@ -157,7 +157,7 @@ const messageSeenUnseenAdmin= async(req, res)=>{
   );
 
   res.send(result);
-}
+} 
 
 const getLatestUsers = async (req, res) => {
   try {
