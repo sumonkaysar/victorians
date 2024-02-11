@@ -54,6 +54,7 @@ const chatController = (io) => {
     });
 
     socket.on("typingMessage", async (data) => {
+
       const message = data?.message;
       const senderId = data?.senderId;
       const user = findUser(senderId);
@@ -76,13 +77,47 @@ const chatController = (io) => {
       
           // Wait for 5 seconds
           await new Promise(resolve => setTimeout(resolve, 5000));
-      
-          // Set typing status false after 30 seconds
+
+          // Set typing status false after 5 seconds
           await usersCollection().updateOne(
               { _id: user_id },
               { $set: { typing: false } }
           );
 
+          // Emit event to stopped typing
+          socket.to(user.socketId).emit("typingMessageGet", { ...data, typing: false });
+      } catch (error) {
+          console.error("Error updating user typing status:", error);
+      }
+      }
+    });
+
+    socket.on("typingMessageAdmin", async (data)=>{
+      const customerId = data?.senderId;
+      const user = findUser(customerId);
+      const user_id = new ObjectId(user?.user?._id);
+      if (user !== undefined) {
+        
+        user.adminTyping = true;
+    
+        try {
+          // Set typing status set true
+          await usersCollection().updateOne(
+              { _id: user_id },
+              { $set: { adminTyping: true } }
+          );
+
+          // Emit event user is typing
+          socket.to(user.socketId).emit("typingMessageGet", { ...data, typing: true });
+      
+          // Wait for 5 seconds
+          await new Promise(resolve => setTimeout(resolve, 5000));
+
+          // Set typing status false after 5 seconds
+          await usersCollection().updateOne(
+              { _id: user_id },
+              { $set: { adminTyping: false } }
+          );
           // Emit event to stopped typing
           socket.to(user.socketId).emit("typingMessageGet", { ...data, typing: false });
       } catch (error) {
