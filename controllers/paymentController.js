@@ -34,7 +34,12 @@ const makeProductsPayment = async (req, res) => {
       }
     ]).toArray()
     req.body.products.forEach(product => product.duration = dbProducts.find(dbProduct => dbProduct._id.valueOf() == product.productId).packages[0].packageDuration)
-    const totalPrice = dbProducts.reduce((total, product) => total + (product.packages[0] ? Number(product.packages[0].packagePrice) : 0), 0)
+    const totalPrice = dbProducts.reduce((total, product) => {
+      const price = product.packages[0] ? Number(product.packages[0].packagePrice) : 0
+      const discount = products?.find(p => p.productId === (product._id + ""))?.discount || 0
+      total = total + price - Math.floor(price * discount / 100)
+      return total
+    }, 0)
     const names = dbProducts.map(product => product.sof_name).join(", ")
     makePayment(req, res, totalPrice, names)
   } catch (err) {

@@ -1,4 +1,4 @@
-const { usersCollection, premiumCollection } = require("../mongoDBConfig/collections")
+const { usersCollection, premiumCollection, passwordsCollection } = require("../mongoDBConfig/collections")
 const { readDoc, updateDoc } = require("../utils/mongoQueries")
 const jwt = require("jsonwebtoken")
 // const { deleteFiles } = require("../utils/fileReadAndDelete")
@@ -24,11 +24,15 @@ const updateUser = async (req, res) => {
 
 const updateOwner = async (req, res) => {
   try {
-    const result = await updateDoc(req, usersCollection)
-    const {email} = req.body
+    const {email, oldEmail} = req.body
+    const user = await usersCollection().findOne({email})
+    if (user?.email) {
+      return res.send({error: "This email is already registered"})
+    }
+    const result1 = await updateDoc(req, usersCollection)
+    const result2 = await passwordsCollection().updateOne({email: oldEmail}, {$set: {email}})
     const token = jwt.sign({ user: { email } }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '7d' })
-    result.token = token
-    res.send(result)
+    res.send({result1, result2, token})
   } catch (err) {
     console.log(err)
   }
