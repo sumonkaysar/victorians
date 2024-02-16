@@ -98,6 +98,19 @@ const getCartPackage = async (req, res) => {
     }
 }
 
+const getCartByText = async (req, res) => {
+    try {
+        const { text } = req.query
+        if (text) {
+            const productIds = (await productsCollection().find({ sof_name: { '$regex': text, '$options': 'i' } }).toArray())?.map(product => product._id + "")
+            const cartInfo = await cartCollection().find({ "products.productId": { '$in': productIds } }).toArray()
+            res.send(cartInfo)
+        }
+    } catch (err) {
+        console.log(err)
+    }
+}
+
 module.exports = {
     getCartProducts,
     saveCartProduct,
@@ -105,4 +118,5 @@ module.exports = {
     inCartAlready,
     getMyCartProducts,
     getCartPackage,
+    getCartByText,
 }
