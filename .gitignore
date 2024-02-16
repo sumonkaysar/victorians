@@ -1,2 +1,4 @@
 node_modules
 .env
+mongoDBConfig/uri.js
+uploaded-files
