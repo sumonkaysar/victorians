@@ -86,50 +86,55 @@ const sortingUserWithMessage = async (req, res) => {
   const allUsers = await readDoc(usersCollection);
   const allMessage = await readDoc(userMessage);
 
-  const extractedData = allMessage.map((message) => ({
-    receiver: message.receiver,
-    authorId: message.authorId,
-    timestamp: message.timestamp,
-  }));
-
-  // Remove 'new ObjectId'
-  const userIds = new Set(
-    extractedData.flatMap((data) => [data.receiver, data.authorId])
-  );
-
-  const usersWithMatchingIds = allUsers.filter((user) =>
-    userIds.has(user._id.toString())
-  );
-
-  usersWithMatchingIds.sort((a, b) => {
-    const timestampA = Math.max(
-      ...extractedData
-        .filter(
-          (data) =>
-            data.receiver === a._id.toString() ||
-            data.authorId === a._id.toString()
-        )
-        .map((data) => data.timestamp)
+  try{
+    const extractedData = allMessage.map((message) => ({
+      receiver: message.receiver,
+      authorId: message.authorId,
+      timestamp: message.timestamp,
+    }));
+  
+    // Remove 'new ObjectId'
+    const userIds = new Set(
+      extractedData.flatMap((data) => [data.receiver, data.authorId])
     );
-    const timestampB = Math.max(
-      ...extractedData
-        .filter(
-          (data) =>
-            data.receiver === b._id.toString() ||
-            data.authorId === b._id.toString()
-        )
-        .map((data) => data.timestamp)
+  
+    const usersWithMatchingIds = allUsers.filter((user) =>
+      userIds.has(user._id.toString())
     );
-    return timestampB - timestampA;
-  });
-
-  res.send(usersWithMatchingIds);
+  
+    usersWithMatchingIds.sort((a, b) => {
+      const timestampA = Math.max(
+        ...extractedData
+          .filter(
+            (data) =>
+              data.receiver === a._id.toString() ||
+              data.authorId === a._id.toString()
+          )
+          .map((data) => data.timestamp)
+      );
+      const timestampB = Math.max(
+        ...extractedData
+          .filter(
+            (data) =>
+              data.receiver === b._id.toString() ||
+              data.authorId === b._id.toString()
+          )
+          .map((data) => data.timestamp)
+      );
+      return timestampB - timestampA;
+    });
+  
+    res.send(usersWithMatchingIds);
+  }catch(err){
+    console.log(err)
+  }
 };
 
 
 const messageSeenUnseenUser = async (req, res) => {
   const userId = req.params.userId;
-
+try{
+  
   const result = await userMessage().updateMany(
     {
       $or: [
@@ -141,11 +146,15 @@ const messageSeenUnseenUser = async (req, res) => {
   );
 
   res.send(result);
+}catch(err){
+  console.log(err)
+}
 };
+
 
 const messageSeenUnseenAdmin= async(req, res)=>{
   const userId = req.params.userId;
-
+try{
   const result = await userMessage().updateMany(
     {
       $or: [
@@ -157,6 +166,10 @@ const messageSeenUnseenAdmin= async(req, res)=>{
   );
 
   res.send(result);
+}catch(err){
+  console.log(err)
+}
+ 
 } 
 
 const getLatestUsers = async (req, res) => {
@@ -180,6 +193,22 @@ const getLatestUsers = async (req, res) => {
   }
 };
 
+const typingEventUpdate= async(req, res)=>{
+
+  const user_id = new ObjectId(req.params.userId);
+  try{
+
+    const result = await usersCollection().updateOne(
+       { _id: user_id },
+       { $set: { typing: false } }
+   );
+   res.send(result);
+  }catch(err){
+    console.log(err)
+  }
+ 
+}
+
 
 
 
@@ -191,5 +220,5 @@ module.exports = {
   sortingUserWithMessage,
   messageSeenUnseenUser,
   messageSeenUnseenAdmin,
-
+  typingEventUpdate,
 };
