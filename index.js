@@ -92,7 +92,8 @@ try {
 
       //notifications routes
       app.use('/notifications', notificationRouter);
-
+      //text going message routes
+      app.use('/text_going_message', )
       //PDF make router
       app.use("/pdf_download", pdfMakeRouter);
     })
