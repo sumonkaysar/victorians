@@ -17,6 +17,7 @@ const pendingPaymentsCollection    = () => client().db(DB).collection("pendingPa
 const premiumCollection            = () => client().db(DB).collection("premium")
 const packagesCollection           = () => client().db(DB).collection("packages")
 const reviewRepliesCollection      = () => client().db(DB).collection("reviewReplies")
+const webMessage                   = () => client().db(DB).collection("webMessage")
 
 module.exports = {
     productsCollection,
@@ -34,4 +35,5 @@ module.exports = {
     premiumCollection,
     packagesCollection,
     reviewRepliesCollection,
+    webMessage
 }

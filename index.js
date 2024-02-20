@@ -34,6 +34,7 @@ const httpServer = http.createServer(app);
 const { Server } = require("socket.io")
 const notificationRouter = require("./routes/notificationsRouter")
 const pdfMakeRouter = require("./routes/pdfMakeRouter")
+const webMessageRouter = require("./routes/textGoingMessageRoute")
 
 
 // With this line (allow all origins for testing, update in production)
@@ -93,7 +94,7 @@ try {
       //notifications routes
       app.use('/notifications', notificationRouter);
       //text going message routes
-      app.use('/text_going_message', )
+      app.use('/text_going_message', webMessageRouter )
       //PDF make router
       app.use("/pdf_download", pdfMakeRouter);
     })
