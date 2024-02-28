@@ -169,6 +169,34 @@ const getProductsByProductIdAndPackageId = async (req, res) => {
     }
 }
 
+const productStock= async(req, res)=>{
+    const productId = new ObjectId(req.params.id);
+
+
+    try{
+        const singleProduct = await productsCollection().findOne({ _id: productId });
+        if (!singleProduct) {
+            return res.status(404).json({ error: 'Product not found' });
+        }
+        
+        const stock = singleProduct.stock;
+        const newStock = stock === undefined ? true : !stock;
+
+        const result = await productsCollection().updateOne(
+            { _id: productId },
+            { 
+                $set: { 
+                    stock: newStock
+                } 
+            }
+        );
+        res.json(result);
+    }catch(e){
+        console.log(e)
+    }
+}
+
+
 module.exports = {
     getAllProducts,
     saveProduct,
@@ -183,4 +211,5 @@ module.exports = {
     getMyPaidProducts,
     getAllProductsNamesByProductIds,
     getProductsByProductIdAndPackageId,
+    productStock
 }
