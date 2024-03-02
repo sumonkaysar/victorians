@@ -208,6 +208,20 @@ const typingEventUpdate= async(req, res)=>{
   }
  
 }
+const typingEventUpdateAdmin= async(req, res)=>{
+
+  const user_id = new ObjectId(req.params.userId);
+  try{
+    const result = await usersCollection().updateOne(
+       { _id: user_id },
+       { $set: { adminTyping: false } }
+   );
+   res.send(result);
+  }catch(err){
+    console.log(err)
+  }
+ 
+}
 
 
 
@@ -221,4 +235,5 @@ module.exports = {
   messageSeenUnseenUser,
   messageSeenUnseenAdmin,
   typingEventUpdate,
+  typingEventUpdateAdmin
 };

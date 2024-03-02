@@ -1,5 +1,5 @@
 const { getCartPackage } = require("../controllers/cartController")
-const { getAllProducts, saveProduct, updateProduct, deleteProduct, getOneProduct, getPopularProducts, makeProductPopular, getPackageProducts, searchProducts, getCategoryProducts, getMyPaidProducts, getAllProductsNamesByProductIds, getProductsByProductIdAndPackageId } = require("../controllers/productsController")
+const { getAllProducts, saveProduct, updateProduct, deleteProduct, getOneProduct, getPopularProducts, makeProductPopular, getPackageProducts, searchProducts, getCategoryProducts, getMyPaidProducts, getAllProductsNamesByProductIds, getProductsByProductIdAndPackageId, productStock } = require("../controllers/productsController")
 const { verifyAdmin } = require("../middlewares/verifyJWT")
 
 const { upload } = require("../utils/uploadFile")
@@ -27,6 +27,8 @@ productsRouter.get("/", getAllProducts)
 productsRouter.post("/", upload.single('img'), saveProduct)
 
 productsRouter.patch("/:id", upload.single('img'), updateProduct)
+
+productsRouter.patch("/stock/:id", productStock)
 
 productsRouter.delete("/:id", deleteProduct)
 
